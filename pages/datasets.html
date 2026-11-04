@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Datasets | Malawi Geoportal</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+
+        <div class="logo">
+            Malawi Geoportal
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="datasets.html" class="active">Datasets</a></li>
+            <li><a href="map.html">Interactive Map</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html" class="login-button">Login</a></li>
+        </ul>
+
+    </nav>
+
+
+    <!-- Page Header -->
+    <section class="page-header">
+
+        <h1>Dataset Explorer</h1>
+
+        <p>
+            Discover geospatial datasets from different
+            departments and sectors across Malawi.
+        </p>
+
+    </section>
+
+
+    <!-- Dataset Explorer -->
+    <main class="dataset-container">
+
+        <!-- Search and Filters -->
+        <section class="dataset-search">
+
+            <div class="search-box">
+    <input
+        type="text"
+        id="dataset-search"
+        placeholder="Search by dataset name or keyword..."
+    >
+
+    <button id="search-button" type="button">
+        Search
+    </button>
+</div>
+
+
+            <div class="filter-group">
+
+                <div class="filter">
+
+                    <label for="department-filter">
+                        Department
+                    </label>
+
+                    <select id="department-filter">
+
+                        <option value="all">
+                            All Departments
+                        </option>
+
+                        <option value="planning">
+                            Planning
+                        </option>
+
+                        <option value="lands">
+                            Lands
+                        </option>
+
+                        <option value="transport">
+                            Transport
+                        </option>
+
+                        <option value="environment">
+                            Environment
+                        </option>
+
+                        <option value="health">
+                            Health
+                        </option>
+
+                        <option value="disaster">
+                            Disaster Management
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter">
+
+                    <label for="access-filter">
+                        Access Level
+                    </label>
+
+                    <select id="access-filter">
+
+                        <option value="all">
+                            All Access Levels
+                        </option>
+
+                        <option value="public">
+                            Public
+                        </option>
+
+                        <option value="restricted">
+                            Restricted
+                        </option>
+
+                        <option value="department">
+                            Department Only
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Results -->
+        <section class="dataset-results">
+
+            <div class="results-header">
+
+                <h2>Available Datasets</h2>
+
+                <span id="dataset-count">
+                    5 datasets
+                </span>
+
+            </div>
+
+
+            <div class="dataset-grid">
+
+
+                <!-- Dataset 1 -->
+                <article class="dataset-card">
+
+                    <div class="dataset-card-header">
+                        <span class="dataset-type">
+                            Vector
+                        </span>
+
+                        <span class="access-public">
+                            Public
+                        </span>
+                    </div>
+
+                    <h3>Malawi District Boundaries</h3>
+
+                    <p>
+                        Administrative boundaries of districts
+                        across Malawi.
+                    </p>
+
+                    <div class="dataset-info">
+
+                        <span>Department: Planning</span>
+
+                        <span>EPSG:4326</span>
+
+                    </div>
+
+                    <a href="dataset-details.html"
+                       class="dataset-button">
+                        View Dataset
+                    </a>
+
+                </article>
+
+
+                <!-- Dataset 2 -->
+                <article class="dataset-card">
+
+                    <div class="dataset-card-header">
+                        <span class="dataset-type">
+                            Point
+                        </span>
+
+                        <span class="access-public">
+                            Public
+                        </span>
+                    </div>
+
+                    <h3>Health Facilities</h3>
+
+                    <p>
+                        Locations and basic information about
+                        health facilities in Malawi.
+                    </p>
+
+                    <div class="dataset-info">
+
+                        <span>Department: Health</span>
+
+                        <span>EPSG:4326</span>
+
+                    </div>
+
+                    <a href="dataset-details.html"
+                       class="dataset-button">
+                        View Dataset
+                    </a>
+
+                </article>
+
+
+                <!-- Dataset 3 -->
+                <article class="dataset-card">
+
+                    <div class="dataset-card-header">
+                        <span class="dataset-type">
+                            Line
+                        </span>
+
+                        <span class="access-public">
+                            Public
+                        </span>
+                    </div>
+
+                    <h3>Road Network</h3>
+
+                    <p>
+                        Major road network data covering
+                        Malawi.
+                    </p>
+
+                    <div class="dataset-info">
+
+                        <span>Department: Transport</span>
+
+                        <span>EPSG:4326</span>
+
+                    </div>
+
+                    <a href="dataset-details.html"
+                       class="dataset-button">
+                        View Dataset
+                    </a>
+
+                </article>
+
+
+                <!-- Dataset 4 -->
+                <article class="dataset-card">
+
+                    <div class="dataset-card-header">
+                        <span class="dataset-type">
+                            Raster
+                        </span>
+
+                        <span class="access-public">
+                            Public
+                        </span>
+                    </div>
+
+                    <h3>Land Use / Land Cover</h3>
+
+                    <p>
+                        Land use and land cover information
+                        for Malawi.
+                    </p>
+
+                    <div class="dataset-info">
+
+                        <span>Department: Environment</span>
+
+                        <span>EPSG:4326</span>
+
+                    </div>
+
+                    <a href="dataset-details.html"
+                       class="dataset-button">
+                        View Dataset
+                    </a>
+
+                </article>
+
+
+                <!-- Dataset 5 -->
+                <article class="dataset-card">
+
+                    <div class="dataset-card-header">
+                        <span class="dataset-type">
+                            Raster
+                        </span>
+
+                        <span class="access-restricted">
+                            Restricted
+                        </span>
+                    </div>
+
+                    <h3>Population Density</h3>
+
+                    <p>
+                        Spatial distribution of population
+                        density across Malawi.
+                    </p>
+
+                    <div class="dataset-info">
+
+                        <span>Department: Planning</span>
+
+                        <span>EPSG:4326</span>
+
+                    </div>
+
+                    <a href="dataset-details.html"
+                       class="dataset-button">
+                        View Dataset
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            &copy; 2026 Malawi Geoportal
+        </p>
+
+        <p>
+            Multi-Departmental Geospatial Information Sharing Platform
+        </p>
+
+    </footer>
+
+    <script src="../js/datasets.js"></script>
+</body>
+
+</html>
