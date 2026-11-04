@@ -1,0 +1,26 @@
+/* Colours and sizes used across the whole site */
+:root {
+    --brand: #6b1f2b;
+    --brand-dark: #4f1620;
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --text: #222222;
+    --muted: #667085;
+    --border: #e2e6ec;
+    --ok: #1a7f4b;
+    --error: #b42318;
+    --radius: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
