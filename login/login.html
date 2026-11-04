@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in | Malawi Geoportal</title>
+
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/nav.css">
+    <link rel="stylesheet" href="../shared/css/forms.css">
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <main class="container">
+        <section class="auth-card">
+            <h1>Log in</h1>
+            <p class="subtitle">Access your account.</p>
+
+            <div id="message" class="message" role="alert"></div>
+
+            <form id="login-form">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required>
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                </div>
+
+                <button type="submit" class="button">Log in</button>
+            </form>
+
+            <p class="switch">No account yet? <a href="../register/register.html">Register</a></p>
+        </section>
+    </main>
+
+    <script type="module" src="login.js"></script>
+</body>
+</html>

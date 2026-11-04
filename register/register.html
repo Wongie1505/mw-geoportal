@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Malawi Geoportal</title>
+
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/nav.css">
+    <link rel="stylesheet" href="../shared/css/forms.css">
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <main class="container">
+        <section class="auth-card">
+            <h1>Create an account</h1>
+            <p class="subtitle">Register to view restricted datasets, request access and contribute data.</p>
+
+            <div id="message" class="message" role="alert"></div>
+
+            <form id="register-form">
+                <div class="field">
+                    <label for="full-name">Full name</label>
+                    <input type="text" id="full-name" name="fullName" autocomplete="name" required>
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required>
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" required>
+                </div>
+
+                <div class="field">
+                    <label for="confirm-password">Confirm password</label>
+                    <input type="password" id="confirm-password" name="confirmPassword" autocomplete="new-password" required>
+                </div>
+
+                <button type="submit" class="button">Register</button>
+            </form>
+
+            <p class="switch">Already registered? <a href="../login/login.html">Log in</a></p>
+        </section>
+    </main>
+
+    <script type="module" src="register.js"></script>
+</body>
+</html>

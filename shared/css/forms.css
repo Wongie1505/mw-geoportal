@@ -1,0 +1,115 @@
+.button {
+    display: inline-block;
+    padding: 10px 18px;
+
+    border: 1px solid var(--brand);
+    border-radius: var(--radius);
+    background-color: var(--brand);
+    color: #ffffff;
+
+    font: inherit;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: var(--brand-dark);
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: #ffffff;
+    font: inherit;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    outline: 2px solid var(--brand);
+    outline-offset: 1px;
+}
+
+/* Status line above a form. Hidden while empty. */
+.message {
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+
+.message:empty {
+    display: none;
+}
+
+.message-error {
+    background-color: #fdecea;
+    border: 1px solid #f5c2c0;
+    color: var(--error);
+}
+
+.message-success {
+    background-color: #e8f5ee;
+    border: 1px solid #bfe3cf;
+    color: var(--ok);
+}
+
+/* Card used by the login and register pages */
+.auth-card {
+    max-width: 420px;
+    margin: 48px auto;
+    padding: 32px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.auth-card h1 {
+    margin-bottom: 6px;
+    color: var(--brand);
+    font-size: 1.6rem;
+}
+
+.auth-card .subtitle {
+    margin-bottom: 24px;
+    color: var(--muted);
+}
+
+.auth-card .button {
+    width: 100%;
+}
+
+.auth-card .switch {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.auth-card .switch a {
+    color: var(--brand);
+}

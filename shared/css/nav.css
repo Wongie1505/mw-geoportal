@@ -1,0 +1,82 @@
+.site-header {
+    background-color: var(--brand);
+    color: #ffffff;
+}
+
+.nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 12px 24px;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* The auto margin pushes the links and account area to the right */
+.nav-brand {
+    margin-right: auto;
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
+.nav-links,
+.nav-account {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Links in the header stay white in every state, whatever colour
+   links are given elsewhere on the page */
+.site-header a,
+.site-header a:visited,
+.site-header a:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
+a:visited{
+    color:white
+}
+/* Plain links are slightly dimmed until hovered or current */
+.nav-links a,
+.nav-account a:not(.nav-button) {
+    opacity: 0.85;
+}
+
+.nav-links a:hover,
+.nav-account a:not(.nav-button):hover,
+.nav-links a[aria-current="page"] {
+    opacity: 1;
+}
+
+.nav-links a[aria-current="page"] {
+    border-bottom: 2px solid #ffffff;
+}
+
+.nav-user {
+    font-size: 0.9rem;
+}
+
+.role-badge {
+    padding: 2px 10px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.18);
+    font-size: 0.75rem;
+}
+
+.nav-button {
+    padding: 6px 14px;
+    border: 1px solid #ffffff;
+    border-radius: var(--radius);
+    background: transparent;
+    color: #ffffff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.site-header .nav-button:hover {
+    background-color: #ffffff;
+    color: var(--brand);
+}

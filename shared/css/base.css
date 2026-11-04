@@ -1,12 +1,21 @@
 /* Colours and sizes used across the whole site */
 :root {
-    --brand: #6b1f2b;
-    --brand-dark: #4f1620;
+    --brand: #1f606b;
+    --brand-dark: #16464f;
+    --brand-light: #e6f1f3;   /* tint for hovered rows, selected items, soft backgrounds */
+    --accent: #d9822b;        /* warm contour orange, used sparingly for highlights */
+
     --bg: #f5f7fa;
     --surface: #ffffff;
     --text: #222222;
     --muted: #667085;
     --border: #e2e6ec;
+
+    /* Access tiers. Red is kept for errors only. */
+    --public: #1a7f4b;
+    --restricted: #b54708;
+    --internal: #475467;
+
     --ok: #1a7f4b;
     --error: #b42318;
     --radius: 8px;
@@ -23,4 +32,30 @@ body {
     background-color: var(--bg);
     color: var(--text);
     line-height: 1.6;
+}
+
+/* Centred page width used inside every page */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+a{
+    color: var(--brand);
+}
+
+a:hover {
+    color: var(--brand-dark);
+    text-decoration: underline;
+}
+
+/* Keyboard users need to see where they are */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.button:active {
+    transform: translateY(1px);
 }
