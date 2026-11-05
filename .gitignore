@@ -1,0 +1,7 @@
+Gitignored/
+# Secrets, never commit
+.env
+.env.*
+# System files
+.DS_Store
+Thumbs.db
