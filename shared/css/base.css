@@ -2,8 +2,8 @@
 :root {
     --brand: #1f606b;
     --brand-dark: #16464f;
-    --brand-light: #e6f1f3;   /* tint for hovered rows, selected items, soft backgrounds */
-    --accent: #d9822b;        /* warm contour orange, used sparingly for highlights */
+    --brand-light: #e6f1f3;
+    --accent: #d9822b;
 
     --bg: #f5f7fa;
     --surface: #ffffff;
@@ -34,14 +34,7 @@ body {
     line-height: 1.6;
 }
 
-/* Centred page width used inside every page */
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 24px;
-}
-
-a{
+a {
     color: var(--brand);
 }
 
@@ -56,6 +49,9 @@ a:hover {
     outline-offset: 2px;
 }
 
-.button:active {
-    transform: translateY(1px);
+/* Centred page width used inside every page */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
 }

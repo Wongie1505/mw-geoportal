@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datasets | Malawi Geoportal</title>
+
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/nav.css">
+    <link rel="stylesheet" href="../shared/css/forms.css">
+    <link rel="stylesheet" href="../shared/css/components.css">
+    <link rel="stylesheet" href="catalog.css">
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <main class="container catalog">
+        <h1>Datasets</h1>
+        <p class="subtitle">Spatial data published by Malawian departments.</p>
+
+        <div class="filters">
+            <input type="search" id="search" placeholder="Search by title, description or keyword" aria-label="Search datasets">
+
+            <select id="department" aria-label="Department">
+                <option value="">All departments</option>
+            </select>
+
+            <select id="access" aria-label="Access level">
+                <option value="">All access levels</option>
+                <option value="public">Public</option>
+                <option value="restricted">Restricted</option>
+                <option value="internal">Internal</option>
+            </select>
+        </div>
+
+        <div id="message" class="message" role="alert"></div>
+        <p id="result-count" class="result-count"></p>
+        <div id="dataset-grid" class="dataset-grid"></div>
+    </main>
+
+    <script type="module" src="catalog.js"></script>
+</body>
+</html>

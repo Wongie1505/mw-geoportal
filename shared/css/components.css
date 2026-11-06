@@ -1,0 +1,35 @@
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Small pill used for access tiers and dataset types */
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.badge-public {
+    background-color: #e8f5ee;
+    color: var(--public);
+}
+
+.badge-restricted {
+    background-color: #fef0c7;
+    color: var(--restricted);
+}
+
+.badge-internal {
+    background-color: #eef0f3;
+    color: var(--internal);
+}
+
+.badge-neutral {
+    background-color: var(--bg);
+    color: var(--muted);
+}

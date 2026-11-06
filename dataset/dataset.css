@@ -1,0 +1,117 @@
+.back-button {
+    margin-bottom: 16px;
+}
+
+.dataset-header h1 {
+    margin-bottom: 8px;
+    color: var(--brand);
+}
+
+.dataset-header .badges {
+    margin-bottom: 12px;
+}
+
+.abstract {
+    max-width: 70ch;
+    margin-bottom: 24px;
+}
+
+.dataset-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.map {
+    height: 520px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: #e9edf1;
+}
+
+/* Loading and access notices under the map. Hidden while empty. */
+.map-status {
+    margin-top: 12px;
+    padding: 12px 14px;
+
+    background-color: var(--brand-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+
+.map-status:empty {
+    display: none;
+}
+
+.side-panel section {
+    margin-bottom: 16px;
+    padding: 16px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.side-panel h2 {
+    margin-bottom: 12px;
+    color: var(--brand);
+    font-size: 1rem;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+    font-size: 0.9rem;
+}
+
+.details dt {
+    color: var(--muted);
+}
+
+.details dd {
+    overflow-wrap: anywhere;
+}
+
+.feature-info {
+    max-height: 320px;
+    overflow: auto;
+}
+
+.feature-info table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.feature-info th,
+.feature-info td {
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.feature-info th {
+    width: 40%;
+    color: var(--muted);
+    font-weight: normal;
+}
+
+.hint {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 800px) {
+    .dataset-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .map {
+        height: 380px;
+    }
+}

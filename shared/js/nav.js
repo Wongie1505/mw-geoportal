@@ -1,4 +1,5 @@
 import { getCurrentUser, signOut } from './auth.js';
+import { createElement } from './ui.js';
 
 // Every page lives one folder below the site root, so links start with ../
 const ROOT = '../';
@@ -6,7 +7,8 @@ const ROOT = '../';
 // Add a line here whenever a new page is built.
 // roles limits who sees the link. Leave it out to show it to everyone.
 const LINKS = [
-    { label: 'Home', href: 'home/home.html' }
+    { label: 'Home', href: 'home/home.html' },
+    { label: 'Datasets', href: 'catalog/catalog.html' }
 ];
 
 const ROLE_LABELS = {
@@ -15,13 +17,6 @@ const ROLE_LABELS = {
     manager: 'Manager',
     admin: 'Admin'
 };
-
-function createElement(tag, className, text) {
-    const element = document.createElement(tag);
-    if (className) element.className = className;
-    if (text) element.textContent = text;
-    return element;
-}
 
 function createLink(label, href, className) {
     const link = createElement('a', className, label);

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset | Malawi Geoportal</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css">
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/nav.css">
+    <link rel="stylesheet" href="../shared/css/forms.css">
+    <link rel="stylesheet" href="../shared/css/components.css">
+    <link rel="stylesheet" href="dataset.css">
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <main class="container">
+        <a class="button button-outline back-button" href="../catalog/catalog.html">Back to datasets</a>
+
+        <div id="message" class="message" role="alert"></div>
+
+        <article id="dataset" hidden>
+            <header class="dataset-header">
+                <h1 id="title"></h1>
+                <div id="badges" class="badges"></div>
+                <p id="abstract" class="abstract"></p>
+            </header>
+
+            <div class="dataset-layout">
+                <section>
+                    <div id="map" class="map"></div>
+                    <p id="map-status" class="map-status"></p>
+                </section>
+
+                <aside class="side-panel">
+                    <section>
+                        <h2>Details</h2>
+                        <dl id="details" class="details"></dl>
+                    </section>
+
+                    <section>
+                        <h2>Feature information</h2>
+                        <div id="feature-info" class="feature-info">
+                            <p class="hint">Click a feature on the map to see its attributes.</p>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </article>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
+    <script type="module" src="dataset.js"></script>
+</body>
+</html>

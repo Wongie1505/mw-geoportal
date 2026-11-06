@@ -1,0 +1,117 @@
+.catalog h1 {
+    color: var(--brand);
+}
+
+.catalog .subtitle {
+    color: var(--muted);
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0 12px;
+}
+
+.filters input,
+.filters select {
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: #ffffff;
+    font: inherit;
+}
+
+.filters input {
+    flex: 1 1 260px;
+}
+
+.filters select {
+    flex: 0 1 200px;
+}
+
+.result-count {
+    margin-bottom: 16px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.dataset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.card:hover {
+    background-color: var(--brand-light);
+    border-color: var(--brand);
+}
+
+/* Shows the keyboard focus on the whole card, not just the title */
+.card:has(a:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.card h2 {
+    font-size: 1.1rem;
+}
+
+/* The title is the real link. Its ::after stretches over the whole card so a
+   click anywhere on the card follows it. Colours are set for every link
+   state so a visited link looks the same as a new one. */
+.card h2 a,
+.card h2 a:visited {
+    color: var(--brand);
+    text-decoration: none;
+}
+
+.card h2 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.card h2 a:focus-visible {
+    outline: none;
+}
+
+.card:hover h2 a {
+    color: var(--brand-dark);
+    text-decoration: underline;
+}
+
+.card .department {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* Cut long descriptions off after three lines */
+.card .abstract {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.empty {
+    grid-column: 1 / -1;
+    color: var(--muted);
+}

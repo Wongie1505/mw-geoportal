@@ -18,9 +18,29 @@
     background-color: var(--brand-dark);
 }
 
+/* When a button is a link, the page-wide link colours must not win */
+.button,
+.button:visited,
+.button:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
+
 .button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+/* Quieter button for secondary actions such as going back */
+.button-outline,
+.button-outline:visited {
+    background-color: transparent;
+    color: var(--brand);
+}
+
+.button-outline:hover {
+    background-color: var(--brand-light);
+    color: var(--brand-dark);
 }
 
 .field {
