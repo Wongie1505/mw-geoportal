@@ -66,6 +66,17 @@
     font: inherit;
 }
 
+/* Small help text under a field. Hidden while empty. */
+.field-hint {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.field-hint:empty {
+    display: none;
+}
+
 .field input:focus,
 .field select:focus,
 .field textarea:focus {

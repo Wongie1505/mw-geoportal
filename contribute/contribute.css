@@ -1,0 +1,35 @@
+.form-card {
+    max-width: 640px;
+    margin: 32px auto;
+    padding: 32px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.form-card h1 {
+    margin-bottom: 6px;
+    color: var(--brand);
+    font-size: 1.6rem;
+}
+
+.form-card .subtitle {
+    margin-bottom: 24px;
+    color: var(--muted);
+}
+
+.form-card textarea {
+    resize: vertical;
+}
+
+/* Buttons shown after a successful upload. Hidden while empty. */
+.result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.result-actions:empty {
+    display: none;
+}

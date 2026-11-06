@@ -8,7 +8,8 @@ const ROOT = '../';
 // roles limits who sees the link. Leave it out to show it to everyone.
 const LINKS = [
     { label: 'Home', href: 'home/home.html' },
-    { label: 'Datasets', href: 'catalog/catalog.html' }
+    { label: 'Datasets', href: 'catalog/catalog.html' },
+    { label: 'Contribute', href: 'contribute/contribute.html', roles: ['user', 'member', 'manager', 'admin'] }
 ];
 
 const ROLE_LABELS = {

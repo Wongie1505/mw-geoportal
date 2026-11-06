@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contribute | Malawi Geoportal</title>
+
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/nav.css">
+    <link rel="stylesheet" href="../shared/css/forms.css">
+    <link rel="stylesheet" href="contribute.css">
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <main class="container">
+        <section class="form-card">
+            <h1>Contribute a dataset</h1>
+            <p class="subtitle">Share spatial data with a department.</p>
+
+            <p id="login-notice" hidden>
+                You need an account to contribute data.
+                <a href="../login/login.html">Log in</a> or
+                <a href="../register/register.html">register</a>.
+            </p>
+
+            <div id="message" class="message" role="alert"></div>
+            <div id="result-actions" class="result-actions"></div>
+
+            <form id="contribute-form">
+                <div class="field">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" maxlength="150" required>
+                </div>
+
+                <div class="field">
+                    <label for="abstract">Description</label>
+                    <textarea id="abstract" name="abstract" rows="5" required></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="department">Owning department</label>
+                    <select id="department" name="department" required>
+                        <option value="" disabled selected>Choose a department</option>
+                    </select>
+                    <p id="department-hint" class="field-hint"></p>
+                </div>
+
+                <div class="field">
+                    <label for="license">License</label>
+                    <input type="text" id="license" name="license" list="license-options" required>
+                    <datalist id="license-options">
+                        <option value="CC BY 4.0"></option>
+                        <option value="CC BY-SA 4.0"></option>
+                        <option value="CC0 1.0"></option>
+                        <option value="ODbL 1.0"></option>
+                    </datalist>
+                </div>
+
+                <div class="field">
+                    <label for="access">Access level</label>
+                    <select id="access" name="access" required>
+                        <option value="public">Public</option>
+                        <option value="restricted">Restricted</option>
+                        <option value="internal">Internal</option>
+                    </select>
+                    <p class="field-hint">For a department you do not belong to, its managers make the final decision.</p>
+                </div>
+
+                <div class="field">
+                    <label for="keywords">Keywords</label>
+                    <input type="text" id="keywords" name="keywords" placeholder="roads, transport, openstreetmap">
+                    <p class="field-hint">Separate keywords with commas.</p>
+                </div>
+
+                <div class="field">
+                    <label for="file">Data file</label>
+                    <input type="file" id="file" name="file" accept=".geojson,.json,.zip" required>
+                    <p class="field-hint">GeoJSON in WGS 84 (EPSG:4326), or a zip holding the shapefile with its .shp, .dbf and .prj files. Up to 50 MB.</p>
+                </div>
+
+                <button type="submit" class="button">Upload dataset</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/shpjs@6.2.0/dist/shp.min.js"></script>
+    <script type="module" src="contribute.js"></script>
+</body>
+</html>
