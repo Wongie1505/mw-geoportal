@@ -33,3 +33,83 @@
     background-color: var(--bg);
     color: var(--muted);
 }
+
+/* Where a dataset is in the review process */
+.badge-status-draft {
+    background-color: var(--bg);
+    color: var(--muted);
+}
+
+.badge-status-pending {
+    background-color: var(--brand-light);
+    color: var(--brand);
+}
+
+.badge-status-changes_requested {
+    background-color: #fef0c7;
+    color: var(--restricted);
+}
+
+.badge-status-published {
+    background-color: #e8f5ee;
+    color: var(--ok);
+}
+
+.badge-status-rejected {
+    background-color: #fdecea;
+    color: var(--error);
+}
+
+/* Tables scroll sideways on small screens instead of breaking the page */
+.table-wrap {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.table th {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.table tbody tr:hover {
+    background-color: var(--brand-light);
+}
+
+.table-note {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.empty-note {
+    color: var(--muted);
+}
+
+/* Information box, for example a dataset's review status */
+.notice {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+
+    background-color: var(--brand-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+a:visited{
+    color: var(--brand);
+}

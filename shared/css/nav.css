@@ -80,3 +80,6 @@ a:visited{
     background-color: #ffffff;
     color: var(--brand);
 }
+a:visited{
+    color: var(--brand);
+}

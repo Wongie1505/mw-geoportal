@@ -57,7 +57,7 @@ export async function getCurrentUser() {
 
     const { data: profile, error } = await supabase
         .from('profiles')
-        .select('full_name, role, departments ( name )')
+        .select('full_name, role, department_id, departments ( name )')
         .eq('id', session.user.id)
         .single();
 
@@ -71,6 +71,7 @@ export async function getCurrentUser() {
         email: session.user.email,
         fullName: profile.full_name,
         role: profile.role,
+        departmentId: profile.department_id,
         department: profile.departments?.name ?? null
     };
 }

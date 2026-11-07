@@ -10,7 +10,7 @@ renderNav();
 
 // Someone already signed in has no reason to be here
 getCurrentUser().then(user => {
-    if (user) location.replace('../home/');
+    if (user) location.replace('../catalog/catalog.html');
 });
 
 form.addEventListener('submit', async (event) => {
@@ -20,9 +20,10 @@ form.addEventListener('submit', async (event) => {
 
     try {
         await signIn(form.elements.email.value.trim(), form.elements.password.value);
-        location.href = '../home/';
+        location.href = '../catalog/catalog.html';
     } catch (error) {
         showMessage(message, error.message);
         submitButton.disabled = false;
     }
 });
+

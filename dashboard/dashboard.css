@@ -1,0 +1,122 @@
+.dashboard-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+    color: var(--brand);
+}
+
+.dashboard-header .subtitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+}
+
+.panel {
+    margin-bottom: 24px;
+    padding: 24px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.panel h2 {
+    margin-bottom: 12px;
+    color: var(--brand);
+    font-size: 1.2rem;
+}
+
+.panel-hint {
+    margin-bottom: 16px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.tile {
+    padding: 16px;
+    background-color: var(--brand-light);
+    border-radius: var(--radius);
+}
+
+.tile-value {
+    color: var(--brand-dark);
+    font-size: 1.8rem;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+.tile-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* One dataset waiting for a decision */
+.review-card {
+    margin-bottom: 16px;
+    padding: 16px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.review-card:last-child {
+    margin-bottom: 0;
+}
+
+.review-card h3 {
+    font-size: 1.05rem;
+}
+
+.review-meta {
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.review-card .abstract {
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.review-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+    gap: 12px;
+}
+
+.review-controls .field {
+    margin-bottom: 0;
+}
+
+.review-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.review-card .message {
+    margin: 12px 0 0;
+}
+
+@media (max-width: 700px) {
+    .review-controls {
+        grid-template-columns: 1fr;
+    }
+}
+a:visited{
+    color: var(--brand);
+}

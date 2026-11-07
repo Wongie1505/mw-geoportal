@@ -8,6 +8,7 @@ const message = document.getElementById('message');
 const article = document.getElementById('dataset');
 const mapElement = document.getElementById('map');
 const mapStatus = document.getElementById('map-status');
+const statusNotice = document.getElementById('status-notice');
 const details = document.getElementById('details');
 const featureInfo = document.getElementById('feature-info');
 
@@ -27,9 +28,8 @@ async function loadDataset() {
         .from('datasets')
         .select(`id, title, abstract, access_level, kind, epsg, license, keywords,
                  file_path, file_format, file_size_bytes, contributor_name,
-                 published_at, departments ( name )`)
+                 status, review_note, published_at, departments ( name )`)
         .eq('id', id)
-        .eq('status', 'published')
         .maybeSingle();
 
     // A bad id, a missing dataset and a dataset this person may not see all
@@ -60,6 +60,24 @@ function formatSize(bytes) {
         : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// Explains why a dataset is not public yet. Only people the database lets
+// see it (the contributor and the owning department's managers) get this far.
+function showStatusNotice(dataset) {
+    const department = dataset.departments?.name;
+    const notices = {
+        draft: 'This dataset is a draft and has not been submitted.',
+        pending: `This dataset is waiting for review by the ${department} department.`,
+        changes_requested: `The ${department} department asked for changes: ${dataset.review_note}`,
+        rejected: `This dataset was rejected: ${dataset.review_note}`
+    };
+
+    const text = notices[dataset.status];
+    if (!text) return;
+
+    statusNotice.textContent = text;
+    statusNotice.hidden = false;
+}
+
 function showDetails(dataset) {
     document.title = `${dataset.title} | Malawi Geoportal`;
     document.getElementById('title').textContent = dataset.title;
@@ -81,6 +99,7 @@ function showDetails(dataset) {
         ? new Date(dataset.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
         : '');
 
+    showStatusNotice(dataset);
     article.hidden = false;
 }
 

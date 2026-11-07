@@ -1,5 +1,5 @@
 import { getCurrentUser, signOut } from './auth.js';
-import { createElement } from './ui.js';
+import { createElement, describeRole } from './ui.js';
 
 // Every page lives one folder below the site root, so links start with ../
 const ROOT = '../';
@@ -9,15 +9,9 @@ const ROOT = '../';
 const LINKS = [
     { label: 'Home', href: 'home/home.html' },
     { label: 'Datasets', href: 'catalog/catalog.html' },
+    { label: 'Dashboard', href: 'dashboard/dashboard.html', roles: ['user', 'member', 'manager', 'admin'] },
     { label: 'Contribute', href: 'contribute/contribute.html', roles: ['user', 'member', 'manager', 'admin'] }
 ];
-
-const ROLE_LABELS = {
-    user: 'User',
-    member: 'Member',
-    manager: 'Manager',
-    admin: 'Admin'
-};
 
 function createLink(label, href, className) {
     const link = createElement('a', className, label);
@@ -28,12 +22,6 @@ function createLink(label, href, className) {
         link.setAttribute('aria-current', 'page');
     }
     return link;
-}
-
-// Shows "Manager, Health" for staff and just "User" for everyone else
-function describeRole(user) {
-    const role = ROLE_LABELS[user.role];
-    return user.department ? `${role}, ${user.department}` : role;
 }
 
 function buildAccountArea(user) {

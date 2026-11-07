@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Malawi Geoportal</title>
+
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/nav.css">
+    <link rel="stylesheet" href="../shared/css/forms.css">
+    <link rel="stylesheet" href="../shared/css/components.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <main class="container dashboard">
+        <div class="dashboard-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p id="welcome" class="subtitle"></p>
+            </div>
+            <a class="button" href="../contribute/contribute.html">Contribute data</a>
+        </div>
+
+        <p id="login-notice" hidden>
+            You need to log in to see your dashboard.
+            <a href="../login/login.html">Log in</a>
+        </p>
+
+        <div id="message" class="message" role="alert"></div>
+
+        <!-- Sections start hidden. dashboard.js shows the ones this role gets. -->
+        <section id="overview-section" class="panel" hidden>
+            <h2>Department overview</h2>
+            <div id="overview" class="tiles"></div>
+        </section>
+
+        <section id="review-section" class="panel" hidden>
+            <h2>Review queue</h2>
+            <p class="panel-hint">Datasets contributed by people outside the department wait here for a decision.</p>
+            <div id="review-list"></div>
+        </section>
+
+        <section id="uploads-section" class="panel" hidden>
+            <h2>My uploads</h2>
+            <div id="uploads-list"></div>
+        </section>
+
+        <section id="department-section" class="panel" hidden>
+            <h2>Department datasets</h2>
+            <div id="department-list"></div>
+        </section>
+    </main>
+
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>

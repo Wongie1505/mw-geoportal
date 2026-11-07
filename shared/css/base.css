@@ -55,3 +55,6 @@ a:hover {
     margin: 0 auto;
     padding: 24px;
 }
+a:visited{
+    color: var(--brand);
+}

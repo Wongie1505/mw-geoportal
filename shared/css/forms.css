@@ -144,3 +144,6 @@
 .auth-card .switch a {
     color: var(--brand);
 }
+a:visited{
+    color: var(--brand);
+}

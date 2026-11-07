@@ -10,7 +10,7 @@ renderNav();
 
 // Someone already signed in has no reason to be here
 getCurrentUser().then(user => {
-    if (user) location.replace('../home/home.html');
+    if (user) location.replace('../catalog/catalog.html');
 });
 
 form.addEventListener('submit', async (event) => {
@@ -44,7 +44,7 @@ form.addEventListener('submit', async (event) => {
             form.hidden = true;
             showMessage(message, 'Account created. Check your email for a confirmation link, then log in.', 'success');
         } else {
-            location.href = '../home/home.html';
+            location.href = '../catalog/catalog.html';
         }
     } catch (error) {
         showMessage(message, error.message);
