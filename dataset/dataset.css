@@ -11,6 +11,14 @@
     margin-bottom: 12px;
 }
 
+.dataset-actions {
+    margin-bottom: 16px;
+}
+
+.dataset-actions:empty {
+    display: none;
+}
+
 .abstract {
     max-width: 70ch;
     margin-bottom: 24px;

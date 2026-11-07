@@ -2,6 +2,7 @@ import { renderNav } from '../shared/js/nav.js';
 import { supabase } from '../shared/js/supabase.js';
 import { getCurrentUser } from '../shared/js/auth.js';
 import { getSignedUrl } from '../shared/js/storage.js';
+import { canDelete, createDeleteButton } from '../shared/js/datasets.js';
 import { accessBadge, createElement, showMessage } from '../shared/js/ui.js';
 
 const message = document.getElementById('message');
@@ -9,6 +10,7 @@ const article = document.getElementById('dataset');
 const mapElement = document.getElementById('map');
 const mapStatus = document.getElementById('map-status');
 const statusNotice = document.getElementById('status-notice');
+const datasetActions = document.getElementById('dataset-actions');
 const details = document.getElementById('details');
 const featureInfo = document.getElementById('feature-info');
 
@@ -28,7 +30,8 @@ async function loadDataset() {
         .from('datasets')
         .select(`id, title, abstract, access_level, kind, epsg, license, keywords,
                  file_path, file_format, file_size_bytes, contributor_name,
-                 status, review_note, published_at, departments ( name )`)
+                 status, review_note, published_at, contributed_by, department_id,
+                 departments ( name )`)
         .eq('id', id)
         .maybeSingle();
 
@@ -78,6 +81,17 @@ function showStatusNotice(dataset) {
     statusNotice.hidden = false;
 }
 
+// Offers Delete to the people the database will let delete this dataset
+async function showActions(dataset) {
+    const user = await getCurrentUser();
+    if (!canDelete(user, dataset)) return;
+
+    datasetActions.append(createDeleteButton(dataset, {
+        onDeleted: () => { location.href = '../dashboard/dashboard.html'; },
+        onError: text => showMessage(message, text)
+    }));
+}
+
 function showDetails(dataset) {
     document.title = `${dataset.title} | Malawi Geoportal`;
     document.getElementById('title').textContent = dataset.title;
@@ -100,6 +114,7 @@ function showDetails(dataset) {
         : '');
 
     showStatusNotice(dataset);
+    showActions(dataset);
     article.hidden = false;
 }
 
@@ -132,7 +147,7 @@ async function showNoAccess(dataset) {
     } else if (dataset.access_level === 'internal') {
         mapStatus.textContent = 'This dataset is only available to staff of the owning department.';
     } else {
-        mapStatus.textContent = 'The data file could not be loaded. Please try again later.';
+        mapStatus.textContent = 'The data file is missing or could not be loaded.';
     }
 }
 

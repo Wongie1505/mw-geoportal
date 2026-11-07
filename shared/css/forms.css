@@ -43,6 +43,24 @@
     color: var(--brand-dark);
 }
 
+/* For actions that cannot be undone, such as deleting a dataset */
+.button-danger,
+.button-danger:visited {
+    background-color: transparent;
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.button-danger:hover {
+    background-color: #fdecea;
+    color: var(--error);
+}
+
+.button-small {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+}
+
 .field {
     margin-bottom: 16px;
 }
@@ -142,8 +160,5 @@
 }
 
 .auth-card .switch a {
-    color: var(--brand);
-}
-a:visited{
     color: var(--brand);
 }

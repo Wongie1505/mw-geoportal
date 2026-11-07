@@ -39,30 +39,6 @@
     font-size: 0.9rem;
 }
 
-.tiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-}
-
-.tile {
-    padding: 16px;
-    background-color: var(--brand-light);
-    border-radius: var(--radius);
-}
-
-.tile-value {
-    color: var(--brand-dark);
-    font-size: 1.8rem;
-    font-weight: bold;
-    line-height: 1.2;
-}
-
-.tile-label {
-    color: var(--muted);
-    font-size: 0.85rem;
-}
-
 /* One dataset waiting for a decision */
 .review-card {
     margin-bottom: 16px;
@@ -117,6 +93,7 @@
         grid-template-columns: 1fr;
     }
 }
-a:visited{
-    color: var(--brand);
+
+#history-stats {
+    margin-bottom: 16px;
 }

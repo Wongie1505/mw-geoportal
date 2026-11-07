@@ -1,13 +1,15 @@
 import { supabase } from '../shared/js/supabase.js';
+import { canDelete, createDeleteButton } from '../shared/js/datasets.js';
 import {
     accessBadge, createElement, createEmptyNote, createTable, formatDate, statusBadge
 } from '../shared/js/ui.js';
 
 // Fills the "My uploads" section with everything this person has contributed
-export async function loadUploads(user, container) {
+export async function loadUploads(user, container, actions) {
     const { data, error } = await supabase
         .from('datasets')
-        .select('id, title, status, access_level, review_note, created_at, departments ( name )')
+        .select(`id, title, status, access_level, review_note, created_at, file_path,
+                 department_id, contributed_by, departments ( name )`)
         .eq('contributed_by', user.id)
         .order('created_at', { ascending: false });
 
@@ -22,17 +24,26 @@ export async function loadUploads(user, container) {
         return;
     }
 
-    const rows = data.map(dataset => [
-        createTitleCell(dataset),
-        dataset.departments?.name,
-        accessBadge(dataset.access_level),
-        statusBadge(dataset.status),
-        formatDate(dataset.created_at)
-    ]);
+    // Only add the actions column when at least one upload can be deleted
+    const showActions = data.some(dataset => canDelete(user, dataset));
+    const headers = ['Title', 'Department', 'Access', 'Status', 'Added'];
+    if (showActions) headers.push('');
 
-    container.replaceChildren(
-        createTable(['Title', 'Department', 'Access', 'Status', 'Added'], rows)
-    );
+    const rows = data.map(dataset => {
+        const cells = [
+            createTitleCell(dataset),
+            dataset.departments?.name,
+            accessBadge(dataset.access_level),
+            statusBadge(dataset.status),
+            formatDate(dataset.created_at)
+        ];
+        if (showActions) {
+            cells.push(canDelete(user, dataset) ? createDeleteButton(dataset, actions) : '');
+        }
+        return cells;
+    });
+
+    container.replaceChildren(createTable(headers, rows));
 }
 
 // The title links to the dataset page. A reviewer's note shows underneath.

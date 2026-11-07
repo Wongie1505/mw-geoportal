@@ -86,3 +86,13 @@ export function createTable(headers, rows) {
     wrapper.append(table);
     return wrapper;
 }
+
+// A number with a label, used for the counts at the top of a section
+export function createTile(label, value) {
+    const tile = createElement('div', 'tile');
+    tile.append(
+        createElement('div', 'tile-value', String(value)),
+        createElement('div', 'tile-label', label)
+    );
+    return tile;
+}

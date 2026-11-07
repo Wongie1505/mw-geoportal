@@ -1,16 +1,8 @@
 import { supabase } from '../shared/js/supabase.js';
+import { canDelete, createDeleteButton } from '../shared/js/datasets.js';
 import {
-    accessBadge, createElement, createEmptyNote, createTable, formatDate, statusBadge
+    accessBadge, createElement, createEmptyNote, createTable, createTile, formatDate, statusBadge
 } from '../shared/js/ui.js';
-
-function createTile(label, value) {
-    const tile = createElement('div', 'tile');
-    tile.append(
-        createElement('div', 'tile-value', String(value)),
-        createElement('div', 'tile-label', label)
-    );
-    return tile;
-}
 
 // The numbers a manager sees at the top: members and datasets by status
 export async function loadOverview(user, container) {
@@ -42,14 +34,39 @@ export async function loadOverview(user, container) {
     );
 }
 
+// The people in the manager's department, managers first
+export async function loadMembers(user, container) {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name, email, role')
+        .eq('department_id', user.departmentId)
+        .order('role')
+        .order('full_name');
+
+    if (error) {
+        console.error(error);
+        container.replaceChildren(createEmptyNote('The members could not be loaded.'));
+        return;
+    }
+
+    const rows = data.map(person => [
+        person.full_name || person.email,
+        person.email,
+        person.role === 'manager' ? 'Manager' : 'Member'
+    ]);
+
+    container.replaceChildren(createTable(['Name', 'Email', 'Role'], rows));
+}
+
 // Everything the department owns. Members see what is published, managers
-// also see datasets that are pending or were sent back.
-export async function loadDepartmentDatasets(user, container) {
+// also see datasets that are pending or were sent back, and can delete them.
+export async function loadDepartmentDatasets(user, container, actions) {
     const isManager = user.role === 'manager';
 
     let query = supabase
         .from('datasets')
-        .select('id, title, status, access_level, contributor_name, published_at, created_at')
+        .select(`id, title, status, access_level, contributor_name, contributed_by,
+                 department_id, file_path, published_at, created_at`)
         .eq('department_id', user.departmentId)
         .order('title');
 
@@ -70,6 +87,7 @@ export async function loadDepartmentDatasets(user, container) {
 
     const headers = ['Title', 'Access', 'Contributed by', 'Date'];
     if (isManager) headers.splice(2, 0, 'Status');
+    if (isManager) headers.push('');
 
     const rows = data.map(dataset => {
         const title = createElement('a', '', dataset.title);
@@ -81,7 +99,11 @@ export async function loadDepartmentDatasets(user, container) {
             dataset.contributor_name,
             formatDate(dataset.published_at ?? dataset.created_at)
         ];
-        if (isManager) cells.splice(2, 0, statusBadge(dataset.status));
+
+        if (isManager) {
+            cells.splice(2, 0, statusBadge(dataset.status));
+            cells.push(canDelete(user, dataset) ? createDeleteButton(dataset, actions) : '');
+        }
         return cells;
     });
 
