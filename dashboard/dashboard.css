@@ -94,6 +94,7 @@
     }
 }
 
-#history-stats {
+#history-stats,
+#access-history-stats {
     margin-bottom: 16px;
 }

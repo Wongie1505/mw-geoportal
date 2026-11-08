@@ -16,7 +16,8 @@ const STATUS_LABELS = {
     pending: 'Pending review',
     changes_requested: 'Changes requested',
     published: 'Published',
-    rejected: 'Rejected'
+    rejected: 'Rejected',
+    approved: 'Approved'
 };
 
 // Builds an element. Text is set with textContent, so anything a user typed
@@ -53,6 +54,22 @@ export function describeRole(user) {
 export function formatDate(value) {
     if (!value) return '';
     return new Date(value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+export function formatDateTime(value) {
+    if (!value) return '';
+    return new Date(value).toLocaleString('en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+}
+
+// A label and a form control wrapped the way forms.css expects
+export function createField(labelText, control) {
+    const field = createElement('div', 'field');
+    const label = createElement('label', '', labelText);
+    label.htmlFor = control.id;
+    field.append(label, control);
+    return field;
 }
 
 // A short grey line used when a list is empty or could not be loaded

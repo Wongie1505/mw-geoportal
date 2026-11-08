@@ -1,6 +1,6 @@
 import { supabase } from '../shared/js/supabase.js';
 import {
-    ACCESS_LABELS, accessBadge, createElement, createEmptyNote, formatDate, showMessage
+    ACCESS_LABELS, accessBadge, createElement, createEmptyNote, createField, formatDate, showMessage
 } from '../shared/js/ui.js';
 
 const EMPTY_TEXT = 'Nothing is waiting for review.';
@@ -120,12 +120,4 @@ function createReviewCard(dataset, user, container, onDecision) {
         feedback
     );
     return card;
-}
-
-function createField(labelText, control) {
-    const field = createElement('div', 'field');
-    const label = createElement('label', '', labelText);
-    label.htmlFor = control.id;
-    field.append(label, control);
-    return field;
 }

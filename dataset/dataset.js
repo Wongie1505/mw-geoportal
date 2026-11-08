@@ -1,7 +1,8 @@
 import { renderNav } from '../shared/js/nav.js';
 import { supabase } from '../shared/js/supabase.js';
 import { getCurrentUser } from '../shared/js/auth.js';
-import { getSignedUrl } from '../shared/js/storage.js';
+import { getFileUrl } from '../shared/js/storage.js';
+import { showAccessPanel } from './access.js';
 import { canDelete, createDeleteButton } from '../shared/js/datasets.js';
 import { accessBadge, createElement, showMessage } from '../shared/js/ui.js';
 
@@ -9,6 +10,7 @@ const message = document.getElementById('message');
 const article = document.getElementById('dataset');
 const mapElement = document.getElementById('map');
 const mapStatus = document.getElementById('map-status');
+const accessPanel = document.getElementById('access-panel');
 const statusNotice = document.getElementById('status-notice');
 const datasetActions = document.getElementById('dataset-actions');
 const details = document.getElementById('details');
@@ -125,15 +127,41 @@ async function showMap(dataset) {
         return;
     }
 
-    // The database decides whether this person may open the file. If it
-    // says no, there is nothing to draw.
-    const url = await getSignedUrl(dataset.file_path);
+    // The database decides whether this person may open the file, and records
+    // it when the data is not open to everyone. If it says no, there is nothing to draw.
+    const url = await getFileUrl(dataset, 'view');
     if (!url) {
         await showNoAccess(dataset);
         return;
     }
 
+    addDownloadButton(dataset);
     drawVectorMap(url);
+}
+
+// The file name offered when saving: the title with only letters, numbers and dashes
+function downloadName(dataset) {
+    const base = dataset.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return `${base || 'dataset'}.geojson`;
+}
+
+function addDownloadButton(dataset) {
+    const button = createElement('button', 'button', 'Download');
+    button.type = 'button';
+
+    button.addEventListener('click', async () => {
+        button.disabled = true;
+        const url = await getFileUrl(dataset, 'download', downloadName(dataset));
+        button.disabled = false;
+
+        if (!url) {
+            showMessage(message, 'The file could not be prepared for download. Please try again.');
+            return;
+        }
+        location.assign(url);
+    });
+
+    datasetActions.prepend(button);
 }
 
 async function showNoAccess(dataset) {
@@ -141,9 +169,13 @@ async function showNoAccess(dataset) {
 
     if (dataset.access_level === 'restricted') {
         const user = await getCurrentUser();
-        mapStatus.textContent = user
-            ? 'This dataset is restricted. Requesting access will be available soon.'
-            : 'This dataset is restricted. Log in to request access.';
+
+        if (user) {
+            mapStatus.textContent = 'This dataset is restricted. Request access to open it.';
+            await showAccessPanel(accessPanel, dataset, user);
+        } else {
+            mapStatus.textContent = 'This dataset is restricted. Log in to request access.';
+        }
     } else if (dataset.access_level === 'internal') {
         mapStatus.textContent = 'This dataset is only available to staff of the owning department.';
     } else {

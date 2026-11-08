@@ -123,3 +123,28 @@
         height: 380px;
     }
 }
+
+/* Request access form and request status, shown for restricted datasets */
+.access-panel {
+    margin-top: 16px;
+    padding: 20px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.access-panel h2 {
+    margin-bottom: 8px;
+    color: var(--brand);
+    font-size: 1.1rem;
+}
+
+.access-panel .field-hint {
+    margin-bottom: 12px;
+}
+
+.contact-list {
+    padding-left: 20px;
+    font-size: 0.9rem;
+}

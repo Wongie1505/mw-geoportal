@@ -55,6 +55,11 @@
     color: var(--ok);
 }
 
+.badge-status-approved {
+    background-color: #e8f5ee;
+    color: var(--ok);
+}
+
 .badge-status-rejected {
     background-color: #fdecea;
     color: var(--error);

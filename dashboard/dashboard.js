@@ -4,6 +4,10 @@ import { createElement, describeRole, showMessage } from '../shared/js/ui.js';
 import { loadUploads } from './uploads.js';
 import { loadReviewQueue } from './review.js';
 import { loadHistory } from './history.js';
+import { loadAccessQueue } from './access-queue.js';
+import { loadAccessHistory } from './access-history.js';
+import { loadMyRequests } from './my-requests.js';
+import { loadMyDownloads } from './my-downloads.js';
 import { loadAllDepartments } from './departments.js';
 import { loadOverview, loadMembers, loadDepartmentDatasets } from './department.js';
 
@@ -62,12 +66,16 @@ async function start() {
     }
     if (isManager || isAdmin) {
         sections.push(['review-section', () => loadReviewQueue(user, byId('review-list'), handleDecision)]);
+        sections.push(['access-section', () => loadAccessQueue(user, byId('access-list'), handleDecision)]);
         sections.push(['history-section', () => loadHistory(user, byId('history-stats'), byId('history-list'))]);
+        sections.push(['access-history-section', () => loadAccessHistory(user, byId('access-history-stats'), byId('access-history-list'))]);
     }
     if (isManager) {
         sections.push(['members-section', () => loadMembers(user, byId('members-list'))]);
     }
     sections.push(['uploads-section', () => loadUploads(user, byId('uploads-list'), actions)]);
+    sections.push(['requests-section', () => loadMyRequests(user, byId('requests-list'))]);
+    sections.push(['downloads-section', () => loadMyDownloads(user, byId('downloads-list'))]);
     if (isManager || isMember) {
         sections.push(['department-section', () => loadDepartmentDatasets(user, byId('department-list'), actions)]);
     }
