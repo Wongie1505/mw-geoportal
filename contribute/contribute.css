@@ -33,3 +33,59 @@
 .result-actions:empty {
     display: none;
 }
+
+.file-feedback {
+    margin-top: 10px;
+}
+
+.file-feedback .message {
+    margin-bottom: 8px;
+}
+
+/* What the file holds, shown before anything is uploaded */
+.preview {
+    margin-bottom: 24px;
+    padding: 16px;
+
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.preview h2 {
+    margin-bottom: 12px;
+    color: var(--brand);
+    font-size: 1.1rem;
+}
+
+.preview h3 {
+    margin: 16px 0 8px;
+    font-size: 0.95rem;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+}
+
+.summary dt {
+    color: var(--muted);
+}
+
+.summary dd {
+    overflow-wrap: anywhere;
+}
+
+.preview-map {
+    height: 320px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: #e9edf1;
+}
+
+.progress {
+    margin-bottom: 16px;
+}

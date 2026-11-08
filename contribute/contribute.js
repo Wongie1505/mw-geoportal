@@ -2,7 +2,10 @@ import { renderNav } from '../shared/js/nav.js';
 import { supabase } from '../shared/js/supabase.js';
 import { getCurrentUser } from '../shared/js/auth.js';
 import { createElement, showMessage } from '../shared/js/ui.js';
-import { readGeoData, boundsToWkt } from './geodata.js';
+import { readGeoData, boundsToWkt, formatSize, FileProblem } from './geodata.js';
+import { showMapPreview, showAttributePreview } from './preview.js';
+import { createProgress } from './progress.js';
+import { uploadFile } from './upload.js';
 
 const form = document.getElementById('contribute-form');
 const message = document.getElementById('message');
@@ -10,14 +13,29 @@ const resultActions = document.getElementById('result-actions');
 const loginNotice = document.getElementById('login-notice');
 const departmentSelect = form.elements.department;
 const departmentHint = document.getElementById('department-hint');
+const fileInput = form.elements.file;
+const fileFeedback = document.getElementById('file-feedback');
+const previewSection = document.getElementById('preview-section');
+const summary = document.getElementById('summary');
+const previewMap = document.getElementById('preview-map');
+const previewNote = document.getElementById('preview-note');
+const attributePreview = document.getElementById('attribute-preview');
 const submitButton = form.querySelector('button[type="submit"]');
+const progress = createProgress(document.getElementById('progress'));
 
 let user = null;
+
+// The checked file, ready to upload. Empty until a file passes the checks.
+let prepared = null;
+
+// Lets a slow check for an old file be ignored once another file is chosen
+let readCount = 0;
 
 renderNav();
 start();
 
 departmentSelect.addEventListener('change', updateDepartmentHint);
+fileInput.addEventListener('change', handleFileChange);
 form.addEventListener('submit', handleSubmit);
 
 async function start() {
@@ -70,37 +88,103 @@ function updateDepartmentHint() {
         : `Your upload will be sent to the ${name} department for review.`;
 }
 
-async function handleSubmit(event) {
-    event.preventDefault();
-    showMessage(message, '');
+function createMessage(text, type) {
+    return createElement('div', `message message-${type}`, text);
+}
+
+// Checks the chosen file as soon as it is picked and shows what it holds
+async function handleFileChange() {
+    const thisRead = ++readCount;
+
+    prepared = null;
     submitButton.disabled = true;
+    previewSection.hidden = true;
+    fileFeedback.replaceChildren();
+
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    fileFeedback.append(createElement('p', 'field-hint', 'Reading and checking the file...'));
 
     try {
-        const result = await uploadDataset();
+        const result = await readGeoData(file);
+        if (thisRead !== readCount) return;
+
+        prepared = result;
+        fileFeedback.replaceChildren(...result.warnings.map(text => createMessage(text, 'warning')));
+        showSummary(result);
+        submitButton.disabled = false;
+    } catch (error) {
+        if (thisRead !== readCount) return;
+
+        console.error(error);
+        const text = error instanceof FileProblem ? error.message : 'That file could not be read.';
+        fileFeedback.replaceChildren(createMessage(text, 'error'));
+    }
+}
+
+function addSummaryRow(label, value) {
+    summary.append(createElement('dt', '', label), createElement('dd', '', value));
+}
+
+function describeTypes(types) {
+    return Object.entries(types)
+        .map(([type, count]) => `${type} (${count.toLocaleString('en-GB')})`)
+        .join(', ');
+}
+
+function describeBounds([minX, minY, maxX, maxY]) {
+    return `Longitude ${minX.toFixed(2)} to ${maxX.toFixed(2)}, latitude ${minY.toFixed(2)} to ${maxY.toFixed(2)}`;
+}
+
+function showSummary(result) {
+    summary.replaceChildren();
+    addSummaryRow('Features', result.featureCount.toLocaleString('en-GB'));
+    addSummaryRow('Geometry', describeTypes(result.geometryTypes));
+    addSummaryRow('Area covered', describeBounds(result.bounds));
+    addSummaryRow('Attributes', `${result.attributes.length} columns`);
+    addSummaryRow('Size after processing', formatSize(result.blob.size));
+
+    // Show the section first so the map can measure its container
+    previewSection.hidden = false;
+
+    const { shown, total } = showMapPreview(previewMap, result.collection);
+    previewNote.textContent = shown < total
+        ? `The map shows a sample of ${shown.toLocaleString('en-GB')} of ${total.toLocaleString('en-GB')} features.`
+        : '';
+
+    showAttributePreview(attributePreview, result.collection, result.attributes);
+}
+
+async function handleSubmit(event) {
+    event.preventDefault();
+    if (!prepared) return;
+
+    showMessage(message, '');
+    submitButton.disabled = true;
+    progress.set(0, 'Starting');
+    progress.show();
+
+    try {
+        const result = await uploadDataset(prepared);
+        progress.hide();
         showResult(result);
     } catch (error) {
         console.error(error);
+        progress.hide();
         showMessage(message, error.message);
         submitButton.disabled = false;
-        submitButton.textContent = 'Upload dataset';
     }
 }
 
 // Creates the draft row, uploads the file, then submits. If any step after
 // the draft fails, the draft and any uploaded file are removed again.
-async function uploadDataset() {
+// The bar moves from 0 to 100 across the steps, and the file transfer
+// takes the largest share of it.
+async function uploadDataset(geo) {
     const fields = form.elements;
 
-    submitButton.textContent = 'Reading file...';
-    let geo;
-    try {
-        geo = await readGeoData(fields.file.files[0]);
-    } catch (error) {
-        console.error(error);
-        throw new Error('That file could not be read. Upload a GeoJSON file or a zipped shapefile.');
-    }
-
-    submitButton.textContent = 'Saving details...';
+    progress.set(5, 'Saving details');
     const { data: dataset, error: insertError } = await supabase
         .from('datasets')
         .insert({
@@ -123,23 +207,25 @@ async function uploadDataset() {
     const path = `${dataset.id}/data.geojson`;
 
     try {
-        submitButton.textContent = 'Uploading file...';
-        const { error: uploadError } = await supabase.storage
-            .from('datasets')
-            .upload(path, geo.blob, { contentType: 'application/geo+json' });
-        if (uploadError) throw uploadError;
+        progress.set(10, 'Uploading file');
+        await uploadFile(path, geo.blob, fraction => {
+            const sent = formatSize(fraction * geo.blob.size);
+            progress.set(10 + fraction * 75, `Uploading file, ${sent} of ${formatSize(geo.blob.size)}`);
+        });
 
+        progress.set(90, 'Saving file details');
         const { error: updateError } = await supabase
             .from('datasets')
             .update({ file_path: path, file_size_bytes: geo.blob.size })
             .eq('id', dataset.id);
         if (updateError) throw updateError;
 
-        submitButton.textContent = 'Submitting...';
+        progress.set(95, 'Submitting');
         const { data: status, error: submitError } = await supabase
             .rpc('submit_dataset', { p_id: dataset.id });
         if (submitError) throw submitError;
 
+        progress.set(100, 'Done');
         return { id: dataset.id, status, department: selectedDepartmentName() };
     } catch (error) {
         await discard(dataset.id, path);

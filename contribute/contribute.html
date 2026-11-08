@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contribute | Malawi Geoportal</title>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css">
     <link rel="stylesheet" href="../shared/css/base.css">
     <link rel="stylesheet" href="../shared/css/nav.css">
     <link rel="stylesheet" href="../shared/css/forms.css">
+    <link rel="stylesheet" href="../shared/css/components.css">
     <link rel="stylesheet" href="contribute.css">
 </head>
 <body>
@@ -77,13 +79,26 @@
                     <label for="file">Data file</label>
                     <input type="file" id="file" name="file" accept=".geojson,.json,.zip" required>
                     <p class="field-hint">GeoJSON in WGS 84 (EPSG:4326), or a zip holding the shapefile with its .shp, .dbf and .prj files. Up to 50 MB.</p>
+                    <div id="file-feedback" class="file-feedback"></div>
                 </div>
 
-                <button type="submit" class="button">Upload dataset</button>
+                <section id="preview-section" class="preview" hidden>
+                    <h2>Preview</h2>
+                    <dl id="summary" class="summary"></dl>
+                    <div id="preview-map" class="preview-map"></div>
+                    <p id="preview-note" class="field-hint"></p>
+                    <h3>First rows of the attribute table</h3>
+                    <div id="attribute-preview"></div>
+                </section>
+
+                <div id="progress" class="progress" hidden></div>
+
+                <button type="submit" class="button" disabled>Upload dataset</button>
             </form>
         </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/shpjs@6.2.0/dist/shp.min.js"></script>
     <script type="module" src="contribute.js"></script>
 </body>

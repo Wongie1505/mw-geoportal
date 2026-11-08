@@ -120,6 +120,12 @@
     color: var(--error);
 }
 
+.message-warning {
+    background-color: #fef0c7;
+    border: 1px solid #f3d98b;
+    color: var(--restricted);
+}
+
 .message-success {
     background-color: #e8f5ee;
     border: 1px solid #bfe3cf;
