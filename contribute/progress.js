@@ -22,12 +22,17 @@ export function createProgress(container) {
             container.hidden = true;
         },
 
+        // A moving stripe on the bar shows the page is busy while the percentage waits
+        working(isWorking) {
+            track.classList.toggle('progress-working', isWorking);
+        },
+
         // percent is 0 to 100. The text says what is happening.
         set(percent, text) {
             const value = Math.round(Math.min(100, Math.max(0, percent)));
             bar.style.width = `${value}%`;
             track.setAttribute('aria-valuenow', String(value));
-            label.textContent = `${text} ${value}%`;
+            label.textContent = `${value}% ${text}`;
         }
     };
 }

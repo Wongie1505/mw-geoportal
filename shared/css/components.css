@@ -156,3 +156,26 @@
     color: var(--muted);
     font-size: 0.85rem;
 }
+
+/* Shown while a single long step is running and no percentage is available */
+.progress-working .progress-bar {
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.25) 25%, transparent 25%,
+        transparent 50%, rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0.25) 75%, transparent 75%
+    );
+    background-size: 20px 20px;
+    animation: progress-stripes 1s linear infinite;
+}
+
+@keyframes progress-stripes {
+    from { background-position: 0 0; }
+    to   { background-position: 20px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .progress-working .progress-bar {
+        animation: none;
+    }
+}

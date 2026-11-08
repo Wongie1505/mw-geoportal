@@ -5,7 +5,6 @@ import { createElement, showMessage } from '../shared/js/ui.js';
 import { readGeoData, boundsToWkt, formatSize, FileProblem } from './geodata.js';
 import { showMapPreview, showAttributePreview } from './preview.js';
 import { createProgress } from './progress.js';
-import { uploadFile } from './upload.js';
 
 const form = document.getElementById('contribute-form');
 const message = document.getElementById('message');
@@ -162,7 +161,7 @@ async function handleSubmit(event) {
 
     showMessage(message, '');
     submitButton.disabled = true;
-    progress.set(0, 'Starting');
+    progress.set(0, 'Starting.');
     progress.show();
 
     try {
@@ -179,12 +178,12 @@ async function handleSubmit(event) {
 
 // Creates the draft row, uploads the file, then submits. If any step after
 // the draft fails, the draft and any uploaded file are removed again.
-// The bar moves from 0 to 100 across the steps, and the file transfer
-// takes the largest share of it.
+// The bar moves in steps. The file transfer is one request, so the bar waits
+// at its step, with a moving stripe, until the transfer finishes.
 async function uploadDataset(geo) {
     const fields = form.elements;
 
-    progress.set(5, 'Saving details');
+    progress.set(10, 'Saving details.');
     const { data: dataset, error: insertError } = await supabase
         .from('datasets')
         .insert({
@@ -207,27 +206,30 @@ async function uploadDataset(geo) {
     const path = `${dataset.id}/data.geojson`;
 
     try {
-        progress.set(10, 'Uploading file');
-        await uploadFile(path, geo.blob, fraction => {
-            const sent = formatSize(fraction * geo.blob.size);
-            progress.set(10 + fraction * 75, `Uploading file, ${sent} of ${formatSize(geo.blob.size)}`);
-        });
+        progress.set(30, `Uploading file (${formatSize(geo.blob.size)}). This can take a while on a slow connection.`);
+        progress.working(true);
+        const { error: uploadError } = await supabase.storage
+            .from('datasets')
+            .upload(path, geo.blob, { contentType: 'application/geo+json' });
+        progress.working(false);
+        if (uploadError) throw uploadError;
 
-        progress.set(90, 'Saving file details');
+        progress.set(90, 'Saving file details.');
         const { error: updateError } = await supabase
             .from('datasets')
             .update({ file_path: path, file_size_bytes: geo.blob.size })
             .eq('id', dataset.id);
         if (updateError) throw updateError;
 
-        progress.set(95, 'Submitting');
+        progress.set(95, 'Submitting.');
         const { data: status, error: submitError } = await supabase
             .rpc('submit_dataset', { p_id: dataset.id });
         if (submitError) throw submitError;
 
-        progress.set(100, 'Done');
+        progress.set(100, 'Done.');
         return { id: dataset.id, status, department: selectedDepartmentName() };
     } catch (error) {
+        progress.working(false);
         await discard(dataset.id, path);
         throw new Error(`Could not upload the dataset: ${error.message}`);
     }
