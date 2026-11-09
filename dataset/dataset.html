@@ -25,7 +25,6 @@
                 <h1 id="title"></h1>
                 <div id="badges" class="badges"></div>
                 <p id="status-notice" class="notice" hidden></p>
-                <div id="dataset-actions" class="dataset-actions"></div>
                 <p id="abstract" class="abstract"></p>
             </header>
 
@@ -50,6 +49,22 @@
                     </section>
                 </aside>
             </div>
+
+            <footer class="dataset-footer">
+                <div id="download-box" class="download-box" hidden>
+                    <div class="download-controls">
+                        <label for="download-format">Download as</label>
+                        <select id="download-format">
+                            <option value="geojson">GeoJSON</option>
+                            <option value="shapefile">Shapefile (zip)</option>
+                        </select>
+                        <button id="download-button" type="button" class="button">Download</button>
+                    </div>
+                    <p id="download-hint" class="field-hint"></p>
+                </div>
+
+                <div id="dataset-actions" class="dataset-actions"></div>
+            </footer>
         </article>
     </main>
 

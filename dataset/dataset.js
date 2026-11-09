@@ -3,6 +3,7 @@ import { supabase } from '../shared/js/supabase.js';
 import { getCurrentUser } from '../shared/js/auth.js';
 import { getFileUrl } from '../shared/js/storage.js';
 import { showAccessPanel } from './access.js';
+import { createShapefileZip } from './shapefile.js';
 import { canDelete, createDeleteButton } from '../shared/js/datasets.js';
 import { accessBadge, createElement, showMessage } from '../shared/js/ui.js';
 
@@ -13,6 +14,10 @@ const mapStatus = document.getElementById('map-status');
 const accessPanel = document.getElementById('access-panel');
 const statusNotice = document.getElementById('status-notice');
 const datasetActions = document.getElementById('dataset-actions');
+const downloadBox = document.getElementById('download-box');
+const downloadFormat = document.getElementById('download-format');
+const downloadButton = document.getElementById('download-button');
+const downloadHint = document.getElementById('download-hint');
 const details = document.getElementById('details');
 const featureInfo = document.getElementById('feature-info');
 
@@ -135,33 +140,96 @@ async function showMap(dataset) {
         return;
     }
 
-    addDownloadButton(dataset);
+    showDownloadControls(dataset);
     drawVectorMap(url);
 }
 
-// The file name offered when saving: the title with only letters, numbers and dashes
-function downloadName(dataset) {
+// The title with only letters, numbers and dashes, used to name downloaded files
+function downloadBase(dataset) {
     const base = dataset.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    return `${base || 'dataset'}.geojson`;
+    return base || 'dataset';
 }
 
-function addDownloadButton(dataset) {
-    const button = createElement('button', 'button', 'Download');
-    button.type = 'button';
+const FORMAT_HINTS = {
+    geojson: '',
+    shapefile: 'Column names are shortened to 10 characters. Points, lines and polygons are saved as separate files in the zip.'
+};
 
-    button.addEventListener('click', async () => {
-        button.disabled = true;
-        const url = await getFileUrl(dataset, 'download', downloadName(dataset));
-        button.disabled = false;
+// Shows the format picker and Download button once the file is known to be open to this person
+function showDownloadControls(dataset) {
+    downloadBox.hidden = false;
 
-        if (!url) {
-            showMessage(message, 'The file could not be prepared for download. Please try again.');
-            return;
-        }
-        location.assign(url);
+    downloadFormat.addEventListener('change', () => {
+        downloadHint.textContent = FORMAT_HINTS[downloadFormat.value];
     });
 
-    datasetActions.prepend(button);
+    downloadButton.addEventListener('click', async () => {
+        showMessage(message, '');
+        downloadButton.disabled = true;
+        downloadButton.textContent = 'Preparing...';
+
+        try {
+            if (downloadFormat.value === 'shapefile') {
+                await downloadShapefile(dataset);
+            } else {
+                await downloadGeoJson(dataset);
+            }
+        } catch (error) {
+            console.error(error);
+            showMessage(message, error.message);
+        }
+
+        downloadButton.disabled = false;
+        downloadButton.textContent = 'Download';
+    });
+}
+
+async function downloadGeoJson(dataset) {
+    const url = await getFileUrl(dataset, 'download', `${downloadBase(dataset)}.geojson`);
+    if (!url) throw new Error('The file could not be prepared for download. Please try again.');
+
+    location.assign(url);
+}
+
+// The stored file is GeoJSON, so a shapefile is built from it here in the browser
+async function downloadShapefile(dataset) {
+    const url = await getFileUrl(dataset, 'download');
+    if (!url) throw new Error('The file could not be prepared for download. Please try again.');
+
+    let collection;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        collection = await response.json();
+    } catch (error) {
+        console.error(error);
+        throw new Error('The data file could not be read. Check your connection and try again.');
+    }
+
+    const base = downloadBase(dataset);
+    const { blob, skipped } = await createShapefileZip(collection, base);
+    saveBlob(blob, `${base}-shapefile.zip`);
+
+    if (skipped > 0) {
+        const text = skipped === 1
+            ? '1 feature without geometry was left out of the shapefile.'
+            : `${skipped.toLocaleString('en-GB')} features without geometry were left out of the shapefile.`;
+        showMessage(message, text, 'warning');
+    }
+}
+
+// Saves a file made in the browser, using a temporary link
+function saveBlob(blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const link = createElement('a');
+    link.href = url;
+    link.download = fileName;
+
+    document.body.append(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
 async function showNoAccess(dataset) {

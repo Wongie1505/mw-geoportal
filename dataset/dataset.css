@@ -11,8 +11,37 @@
     margin-bottom: 12px;
 }
 
-.dataset-actions {
-    margin-bottom: 16px;
+/* Download and delete sit at the bottom of the page */
+.dataset-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.download-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.download-controls label {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.download-controls select {
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: #ffffff;
+    font: inherit;
 }
 
 .dataset-actions:empty {
