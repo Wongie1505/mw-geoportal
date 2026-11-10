@@ -17,8 +17,7 @@
 
 /* ---------- Hero ---------- */
 
-/* Put your photo at home/hero.jpg. If it is missing, the plain teal
-   background colour shows instead, so the text stays readable. */
+
 .hero {
     display: flex;
     align-items: center;
@@ -26,7 +25,7 @@
 
     background-color: var(--brand-dark);
     background-image:
-        url('hero.jpg');
+        url('hero.webp');
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -166,7 +165,7 @@
         /* On a narrow screen the text covers the whole photo, so the
            dark layer is even instead of fading from left to right */
         background-image:
-                    url('hero.jpg');
+                    url('hero.webp');
     }
 
     .hero-inner {
