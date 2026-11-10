@@ -13,6 +13,9 @@ import { loadOverview, loadDepartmentDatasets } from './department.js';
 import { loadJoin } from './join.js';
 import { loadMembershipRequests } from './membership-requests.js';
 import { loadMembers, setupLeaveButton } from './members.js';
+import { loadSystem } from './system.js';
+import { loadAuditLog } from './audit-log.js';
+import { setupDepartmentForm } from './add-department.js';
 
 const loginNotice = document.getElementById('login-notice');
 const welcome = document.getElementById('welcome');
@@ -71,6 +74,7 @@ async function start() {
         sections.push(['overview-section', () => loadOverview(user, byId('overview'))]);
     }
     if (isAdmin) {
+        sections.push(['system-section', () => loadSystem(byId('system-tiles'), byId('system-downloads'))]);
         sections.push(['departments-section', () => loadAllDepartments(byId('departments-list'))]);
     }
     if (isManager || isAdmin) {
@@ -93,6 +97,13 @@ async function start() {
     sections.forEach(([id]) => { byId(id).hidden = false; });
     loadAll = () => sections.forEach(([, load]) => load());
     loadAll();
+
+    // These two are built once, so a reload of the other sections keeps what was typed
+    if (isAdmin) {
+        setupDepartmentForm(byId('department-form'), handleDecision);
+        byId('audit-section').hidden = false;
+        loadAuditLog(byId('audit-list'));
+    }
 }
 
 function byId(id) {
