@@ -1,4 +1,181 @@
-.home h1 {
-    margin-bottom: 12px;
+/* Keeps the footer at the bottom of short pages */
+.home-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-page main {
+    flex: 1;
+}
+
+/* Headings on this page use a serif face to set them apart from the body text */
+.hero h1,
+.about h2 {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+/* ---------- Hero ---------- */
+
+/* Put your photo at home/hero.jpg. If it is missing, the plain teal
+   background colour shows instead, so the text stays readable. */
+.hero {
+    display: flex;
+    align-items: center;
+    min-height: 520px;
+
+    background-color: var(--brand-dark);
+    background-image:
+        url('hero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+}
+
+.hero-inner {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 24px;
+}
+
+.hero h1 {
+    max-width: 14em;
+    margin-bottom: 20px;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+}
+
+.hero-text {
+    max-width: 34em;
+    margin-bottom: 36px;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 1.125rem;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Colours are set for every link state so a visited link looks the same */
+.hero .cta,
+.hero .cta:visited {
+    display: inline-block;
+    padding: 14px 28px;
+
+    background-color: var(--accent);
+    border-radius: var(--radius);
+    color: #1b1b1b;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.hero .cta:hover,
+.hero .cta:focus-visible {
+    background-color: #e8963f;
+    color: #1b1b1b;
+    text-decoration: none;
+}
+
+/* ---------- About ---------- */
+
+.about {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 24px;
+
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 48px;
+}
+
+.about h2 {
     color: var(--brand);
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+.about-text {
+    max-width: 62ch;
+    font-size: 1.05rem;
+}
+
+.about-text p + p {
+    margin-top: 16px;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+    background-color: var(--brand-dark);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 28px;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.footer-brand strong {
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+.footer-brand p {
+    margin-top: 4px;
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.site-footer a,
+.site-footer a:visited {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer-copy {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 24px 24px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.85rem;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 720px) {
+    .hero {
+        min-height: 420px;
+
+        /* On a narrow screen the text covers the whole photo, so the
+           dark layer is even instead of fading from left to right */
+        background-image:
+                    url('hero.jpg');
+    }
+
+    .hero-inner {
+        padding: 56px 24px;
+    }
+
+    .about {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 48px 24px;
+    }
 }
