@@ -9,13 +9,55 @@
     <link rel="stylesheet" href="../shared/css/nav.css">
     <link rel="stylesheet" href="home.css">
 </head>
-<body>
+<body class="home-page">
     <header id="site-header" class="site-header"></header>
 
-    <main class="container home">
-        <h1>Malawi Geoportal</h1>
-        <p>A shared place for Malawian departments to publish, discover and request spatial data.</p>
+    <main>
+        <section class="hero">
+
+            <div class="hero-inner">
+                <h1>Malawi's spatial data, in one place.</h1>
+                <p class="hero-text">
+                    Browse maps and datasets published by Malawian departments,
+                    and request access to the ones you need.
+                </p>
+                <a class="cta" href="../catalog/catalog.html">Browse datasets</a>
+            </div>
+        </section>
+
+        <section class="about" aria-labelledby="about-title">
+            <h2 id="about-title">About the Geoportal</h2>
+            <div class="about-text">
+                <p>
+                    The Malawi Geoportal is a shared place for Malawian departments to
+                    publish, discover and request spatial data. Every dataset is described
+                    in the catalog, so you can see what it covers and who owns it before
+                    you use it.
+                </p>
+                <p>
+                    Public datasets are open to everyone. Restricted datasets need
+                    approval: you send a request, and the department that owns the data
+                    decides. Staff with an account can also contribute datasets and manage
+                    requests from their dashboard.
+                </p>
+            </div>
+        </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <strong>Malawi Geoportal</strong>
+                <p>Spatial data from Malawian departments.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer">
+                <a href="../catalog/catalog.html">Datasets</a>
+                <a href="../login/login.html">Log in</a>
+                <a href="../register/register.html">Register</a>
+            </nav>
+        </div>
+        <p class="footer-copy">&copy; 2026 Malawi Geoportal</p>
+    </footer>
 
     <script type="module" src="home.js"></script>
 </body>
