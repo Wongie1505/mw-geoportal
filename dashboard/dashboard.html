@@ -20,7 +20,10 @@
                 <h1>Dashboard</h1>
                 <p id="welcome" class="subtitle"></p>
             </div>
-            <a class="button" href="../contribute/contribute.html">Contribute data</a>
+            <div class="dashboard-actions">
+                <button id="leave-button" class="button button-outline" type="button" hidden>Leave department</button>
+                <a class="button" href="../contribute/contribute.html">Contribute data</a>
+            </div>
         </div>
 
         <p id="login-notice" hidden>
@@ -31,6 +34,12 @@
         <div id="message" class="message" role="alert"></div>
 
         <!-- Sections start hidden. dashboard.js shows the ones this role gets. -->
+        <section id="join-section" class="panel" hidden>
+            <h2>Join a department</h2>
+            <p class="panel-hint">Ask a department to add you as a member. A manager of that department decides on your request.</p>
+            <div id="join-list"></div>
+        </section>
+
         <section id="overview-section" class="panel" hidden>
             <h2>Department overview</h2>
             <div id="overview" class="tiles"></div>
@@ -39,6 +48,12 @@
         <section id="departments-section" class="panel" hidden>
             <h2>Departments</h2>
             <div id="departments-list"></div>
+        </section>
+
+        <section id="membership-section" class="panel" hidden>
+            <h2>Membership requests</h2>
+            <p class="panel-hint">People asking to join the department wait here for a decision.</p>
+            <div id="membership-list"></div>
         </section>
 
         <section id="review-section" class="panel" hidden>

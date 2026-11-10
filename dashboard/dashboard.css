@@ -98,3 +98,21 @@
 #access-history-stats {
     margin-bottom: 16px;
 }
+
+.dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.member-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.contact-list {
+    margin-bottom: 16px;
+    padding-left: 20px;
+    font-size: 0.9rem;
+}

@@ -9,7 +9,10 @@ import { loadAccessHistory } from './access-history.js';
 import { loadMyRequests } from './my-requests.js';
 import { loadMyDownloads } from './my-downloads.js';
 import { loadAllDepartments } from './departments.js';
-import { loadOverview, loadMembers, loadDepartmentDatasets } from './department.js';
+import { loadOverview, loadDepartmentDatasets } from './department.js';
+import { loadJoin } from './join.js';
+import { loadMembershipRequests } from './membership-requests.js';
+import { loadMembers, setupLeaveButton } from './members.js';
 
 const loginNotice = document.getElementById('login-notice');
 const welcome = document.getElementById('welcome');
@@ -35,6 +38,9 @@ async function start() {
     const isManager = user.role === 'manager';
     const isAdmin = user.role === 'admin';
     const isMember = user.role === 'member';
+    const isUser = user.role === 'user';
+
+    setupLeaveButton(user, byId('leave-button'), text => showMessage(message, text));
 
     let loadAll;
 
@@ -58,6 +64,9 @@ async function start() {
     // page. Each entry is a section id and the function that fills it.
     const sections = [];
 
+    if (isUser) {
+        sections.push(['join-section', () => loadJoin(byId('join-list'))]);
+    }
     if (isManager) {
         sections.push(['overview-section', () => loadOverview(user, byId('overview'))]);
     }
@@ -66,12 +75,13 @@ async function start() {
     }
     if (isManager || isAdmin) {
         sections.push(['review-section', () => loadReviewQueue(user, byId('review-list'), handleDecision)]);
+        sections.push(['membership-section', () => loadMembershipRequests(user, byId('membership-list'), handleDecision)]);
         sections.push(['access-section', () => loadAccessQueue(user, byId('access-list'), handleDecision)]);
         sections.push(['history-section', () => loadHistory(user, byId('history-stats'), byId('history-list'))]);
         sections.push(['access-history-section', () => loadAccessHistory(user, byId('access-history-stats'), byId('access-history-list'))]);
     }
-    if (isManager) {
-        sections.push(['members-section', () => loadMembers(user, byId('members-list'))]);
+    if (isManager || isAdmin) {
+        sections.push(['members-section', () => loadMembers(user, byId('members-list'), handleDecision)]);
     }
     sections.push(['uploads-section', () => loadUploads(user, byId('uploads-list'), actions)]);
     sections.push(['requests-section', () => loadMyRequests(user, byId('requests-list'))]);
