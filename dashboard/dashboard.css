@@ -116,3 +116,231 @@
     padding-left: 20px;
     font-size: 0.9rem;
 }
+
+.dashboard-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+/* The hamburger turns into an X while the drawer is open */
+.menu-toggle {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.menu-toggle:hover {
+    background-color: var(--brand-light);
+}
+
+.menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: var(--brand);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+.dashboard-body {
+    display: flex;
+    align-items: flex-start;
+}
+
+.dashboard-views {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Wide screens: the drawer sits beside the page and slides out of the way */
+.drawer {
+    flex: 0 0 240px;
+    align-self: stretch;
+    margin-right: 24px;
+    transition: margin-left 0.2s ease, opacity 0.2s ease;
+}
+
+.dashboard-body:not(.drawer-open) .drawer {
+    margin-left: -264px;
+    opacity: 0;
+    visibility: hidden;
+    transition: margin-left 0.2s ease, opacity 0.2s ease, visibility 0s 0.2s;
+}
+
+.drawer-inner {
+    position: sticky;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 60vh;
+    padding: 12px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.drawer-menu {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.drawer-close {
+    display: none;
+}
+
+.drawer-backdrop {
+    display: none;
+}
+
+.drawer-heading {
+    margin: 14px 12px 6px;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.drawer-heading:first-child {
+    margin-top: 4px;
+}
+
+.drawer-link,
+.drawer-link:visited {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 0.95rem;
+    text-decoration: none;
+}
+
+.drawer-link:hover {
+    background-color: var(--brand-light);
+    color: var(--brand-dark);
+    text-decoration: none;
+}
+
+.drawer-link.active,
+.drawer-link.active:visited {
+    background-color: var(--brand-light);
+    color: var(--brand);
+    font-weight: bold;
+}
+
+.drawer-count {
+    min-width: 22px;
+    padding: 1px 7px;
+
+    background-color: var(--accent);
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.drawer-bottom {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* Narrow screens: the drawer covers the page and a dark layer sits behind it */
+@media (max-width: 899px) {
+    .drawer,
+    .dashboard-body:not(.drawer-open) .drawer {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        width: min(280px, 85vw);
+        margin: 0;
+
+        opacity: 1;
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform 0.2s ease, visibility 0s 0.2s;
+    }
+
+    .dashboard-body.drawer-open .drawer {
+        transform: translateX(0);
+        visibility: visible;
+        transition: transform 0.2s ease;
+    }
+
+    .drawer-inner {
+        position: static;
+        height: 100%;
+        overflow-y: auto;
+        border-radius: 0;
+    }
+
+    .drawer-close {
+        display: block;
+        align-self: flex-end;
+        margin-bottom: 8px;
+    }
+
+    .drawer-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+
+        background-color: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .dashboard-body.drawer-open .drawer-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .drawer,
+    .drawer-backdrop,
+    .menu-toggle span {
+        transition: none !important;
+    }
+}

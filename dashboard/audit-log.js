@@ -5,6 +5,12 @@ import {
 
 const PAGE_SIZE = 50;
 
+// The export gets the matching entries in chunks, up to this many
+const EXPORT_CHUNK = 1000;
+const EXPORT_LIMIT = 10000;
+
+const COLUMNS = 'id, created_at, actor_email, actor_department, action, dataset_title, details';
+
 // What each choice in the filter asks the database for
 const FILTERS = [
     { label: 'All activity' },
@@ -21,9 +27,13 @@ function describeAction(action) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+function hasDetails(details) {
+    return details && Object.keys(details).length > 0;
+}
+
 // The extra facts of an entry, kept closed until someone wants to read them
 function createDetails(details) {
-    if (!details || Object.keys(details).length === 0) return '';
+    if (!hasDetails(details)) return '';
 
     const wrapper = createElement('details', 'audit-details');
     wrapper.append(
@@ -33,9 +43,39 @@ function createDetails(details) {
     return wrapper;
 }
 
-// Builds the filter bar and the list, then loads the newest entries.
-// Apply loads the list again, so it also works as a refresh.
-export function loadAuditLog(container) {
+// One cell of the CSV file, always in quotes. A cell that starts with one of
+// these characters would be run as a formula by Excel, so it gets a ' in front.
+function csvCell(value) {
+    let text = value === null || value === undefined ? '' : String(value);
+    if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+    return `"${text.replace(/"/g, '""')}"`;
+}
+
+function downloadCsv(entries) {
+    const header = ['Time', 'Person', 'Department', 'Action', 'Dataset', 'Details'];
+
+    const lines = [header, ...entries.map(entry => [
+        entry.created_at,
+        entry.actor_email,
+        entry.actor_department,
+        entry.action,
+        entry.dataset_title,
+        hasDetails(entry.details) ? JSON.stringify(entry.details) : ''
+    ])].map(row => row.map(csvCell).join(','));
+
+    // The mark at the start tells Excel the file is UTF-8
+    const file = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const link = createElement('a');
+    link.href = URL.createObjectURL(file);
+    link.download = `audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+// Builds the filter bar and the list, then loads the newest entries. Apply
+// loads the list again, so it also works as a refresh. The export button goes
+// into actions, which sits in the title row of the section.
+export function loadAuditLog(container, actions) {
     const select = createElement('select');
     select.id = 'audit-filter';
     FILTERS.forEach((filter, index) => {
@@ -62,31 +102,46 @@ export function loadAuditLog(container) {
     more.type = 'button';
     more.hidden = true;
 
+    const exportButton = createElement('button', 'button button-outline', 'Export CSV');
+    exportButton.type = 'button';
+    actions.replaceChildren(exportButton);
+
     let entries = [];
+    let applied;
+
+    // Characters that mean something in a filter are dropped from the search text
+    function readControls() {
+        return {
+            filter: FILTERS[Number(select.value)],
+            person: search.value.trim().replace(/[%,()]/g, '')
+        };
+    }
+
+    // Load more and the export keep to what Apply last asked for, even if the
+    // controls were changed since
+    function buildQuery() {
+        let query = supabase
+            .from('audit_log')
+            .select(COLUMNS)
+            .order('created_at', { ascending: false })
+            .order('id', { ascending: false });
+
+        if (applied.filter.like) query = query.like('action', applied.filter.like);
+        if (applied.filter.equals) query = query.eq('action', applied.filter.equals);
+        if (applied.person) query = query.ilike('actor_email', `%${applied.person}%`);
+        return query;
+    }
 
     async function load(reset) {
-        if (reset) entries = [];
+        if (reset) {
+            entries = [];
+            applied = readControls();
+        }
 
         showMessage(feedback, '');
         [apply, more].forEach(button => { button.disabled = true; });
 
-        const filter = FILTERS[Number(select.value)];
-
-        let query = supabase
-            .from('audit_log')
-            .select('id, created_at, actor_email, actor_department, action, dataset_title, details')
-            .order('created_at', { ascending: false })
-            .order('id', { ascending: false })
-            .range(entries.length, entries.length + PAGE_SIZE - 1);
-
-        if (filter.like) query = query.like('action', filter.like);
-        if (filter.equals) query = query.eq('action', filter.equals);
-
-        // Characters that mean something in a filter are dropped from the search text
-        const person = search.value.trim().replace(/[%,()]/g, '');
-        if (person) query = query.ilike('actor_email', `%${person}%`);
-
-        const { data, error } = await query;
+        const { data, error } = await buildQuery().range(entries.length, entries.length + PAGE_SIZE - 1);
         [apply, more].forEach(button => { button.disabled = false; });
 
         if (error) {
@@ -121,8 +176,40 @@ export function loadAuditLog(container) {
         ));
     }
 
+    async function exportAll() {
+        showMessage(feedback, '');
+        exportButton.disabled = true;
+        exportButton.textContent = 'Preparing...';
+
+        const all = [];
+
+        while (all.length < EXPORT_LIMIT) {
+            const { data, error } = await buildQuery().range(all.length, all.length + EXPORT_CHUNK - 1);
+
+            if (error) {
+                console.error(error);
+                showMessage(feedback, 'The export failed. Please try again.');
+                exportButton.disabled = false;
+                exportButton.textContent = 'Export CSV';
+                return;
+            }
+
+            all.push(...data);
+            if (data.length < EXPORT_CHUNK) break;
+        }
+
+        downloadCsv(all);
+
+        if (all.length >= EXPORT_LIMIT) {
+            showMessage(feedback, `Exported the newest ${EXPORT_LIMIT} entries. Narrow the filter to reach older ones.`, 'success');
+        }
+        exportButton.disabled = false;
+        exportButton.textContent = 'Export CSV';
+    }
+
     apply.addEventListener('click', () => load(true));
     more.addEventListener('click', () => load(false));
+    exportButton.addEventListener('click', exportAll);
     search.addEventListener('keydown', event => {
         if (event.key === 'Enter') load(true);
     });

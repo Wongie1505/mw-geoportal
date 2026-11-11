@@ -16,9 +16,16 @@
 
     <main class="container dashboard">
         <div class="dashboard-header">
-            <div>
-                <h1>Dashboard</h1>
-                <p id="welcome" class="subtitle"></p>
+            <div class="dashboard-title">
+                <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Menu" aria-controls="drawer" aria-expanded="false" hidden>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div>
+                    <h1>Dashboard</h1>
+                    <p id="welcome" class="subtitle"></p>
+                </div>
             </div>
             <div class="dashboard-actions">
                 <button id="leave-button" class="button button-outline" type="button" hidden>Leave department</button>
@@ -33,91 +40,107 @@
 
         <div id="message" class="message" role="alert"></div>
 
-        <!-- Sections start hidden. dashboard.js shows the ones this role gets. -->
-        <section id="join-section" class="panel" hidden>
-            <h2>Join a department</h2>
-            <p class="panel-hint">Ask a department to add you as a member. A manager of that department decides on your request.</p>
-            <div id="join-list"></div>
-        </section>
+        <div id="dashboard-body" class="dashboard-body" hidden>
+            <div id="drawer-backdrop" class="drawer-backdrop"></div>
 
-        <section id="overview-section" class="panel" hidden>
-            <h2>Department overview</h2>
-            <div id="overview" class="tiles"></div>
-        </section>
+            <aside id="drawer" class="drawer" aria-label="Dashboard menu">
+                <div class="drawer-inner">
+                    <button id="drawer-close" class="button button-outline button-small drawer-close" type="button">Close</button>
+                    <nav id="drawer-menu" class="drawer-menu"></nav>
+                </div>
+            </aside>
 
-        <section id="system-section" class="panel" hidden>
-            <h2>System overview</h2>
-            <div id="system-tiles" class="tiles"></div>
-            <h3 class="subheading">Downloads per dataset</h3>
-            <div id="system-downloads"></div>
-        </section>
+            <!-- Sections start hidden. dashboard.js shows the one chosen in the menu. -->
+            <div id="dashboard-views" class="dashboard-views">
+                <section id="join-section" class="panel" hidden>
+                    <h2>Join a department</h2>
+                    <p class="panel-hint">Ask a department to add you as a member. A manager of that department decides on your request.</p>
+                    <div id="join-list"></div>
+                </section>
 
-        <section id="departments-section" class="panel" hidden>
-            <h2>Departments</h2>
-            <div id="departments-list"></div>
-            <div id="department-form"></div>
-        </section>
+                <section id="overview-section" class="panel" hidden>
+                    <h2>Department overview</h2>
+                    <div id="overview" class="tiles"></div>
+                </section>
 
-        <section id="membership-section" class="panel" hidden>
-            <h2>Membership requests</h2>
-            <p class="panel-hint">People asking to join the department wait here for a decision.</p>
-            <div id="membership-list"></div>
-        </section>
+                <section id="system-section" class="panel" hidden>
+                    <h2>System overview</h2>
+                    <div id="system-tiles" class="tiles"></div>
+                    <h3 class="subheading">Downloads per dataset</h3>
+                    <div id="system-downloads"></div>
+                </section>
 
-        <section id="review-section" class="panel" hidden>
-            <h2>Review queue</h2>
-            <p class="panel-hint">Datasets contributed by people outside the department wait here for a decision.</p>
-            <div id="review-list"></div>
-        </section>
+                <section id="departments-section" class="panel" hidden>
+                    <h2>Departments</h2>
+                    <div id="departments-list"></div>
+                    <div id="department-form"></div>
+                </section>
 
-        <section id="access-section" class="panel" hidden>
-            <h2>Access requests</h2>
-            <p class="panel-hint">People asking for restricted data wait here for a decision.</p>
-            <div id="access-list"></div>
-        </section>
+                <section id="membership-section" class="panel" hidden>
+                    <h2>Membership requests</h2>
+                    <p class="panel-hint">People asking to join the department wait here for a decision.</p>
+                    <div id="membership-list"></div>
+                </section>
 
-        <section id="history-section" class="panel" hidden>
-            <h2>Review history</h2>
-            <div id="history-stats" class="tiles"></div>
-            <div id="history-list"></div>
-        </section>
+                <section id="review-section" class="panel" hidden>
+                    <h2>Review queue</h2>
+                    <p class="panel-hint">Datasets contributed by people outside the department wait here for a decision.</p>
+                    <div id="review-list"></div>
+                </section>
 
-        <section id="access-history-section" class="panel" hidden>
-            <h2>Access history</h2>
-            <div id="access-history-stats" class="tiles"></div>
-            <div id="access-history-list"></div>
-        </section>
+                <section id="access-section" class="panel" hidden>
+                    <h2>Access requests</h2>
+                    <p class="panel-hint">People asking for restricted data wait here for a decision.</p>
+                    <div id="access-list"></div>
+                </section>
 
-        <section id="members-section" class="panel" hidden>
-            <h2>Department members</h2>
-            <div id="members-list"></div>
-        </section>
+                <section id="history-section" class="panel" hidden>
+                    <h2>Review history</h2>
+                    <div id="history-stats" class="tiles"></div>
+                    <div id="history-list"></div>
+                </section>
 
-        <section id="uploads-section" class="panel" hidden>
-            <h2>My uploads</h2>
-            <div id="uploads-list"></div>
-        </section>
+                <section id="access-history-section" class="panel" hidden>
+                    <h2>Access history</h2>
+                    <div id="access-history-stats" class="tiles"></div>
+                    <div id="access-history-list"></div>
+                </section>
 
-        <section id="requests-section" class="panel" hidden>
-            <h2>My access requests</h2>
-            <div id="requests-list"></div>
-        </section>
+                <section id="members-section" class="panel" hidden>
+                    <h2>Department members</h2>
+                    <div id="members-list"></div>
+                </section>
 
-        <section id="downloads-section" class="panel" hidden>
-            <h2>My downloads</h2>
-            <div id="downloads-list"></div>
-        </section>
+                <section id="uploads-section" class="panel" hidden>
+                    <h2>My uploads</h2>
+                    <div id="uploads-list"></div>
+                </section>
 
-        <section id="department-section" class="panel" hidden>
-            <h2>Department datasets</h2>
-            <div id="department-list"></div>
-        </section>
+                <section id="requests-section" class="panel" hidden>
+                    <h2>My access requests</h2>
+                    <div id="requests-list"></div>
+                </section>
 
-        <section id="audit-section" class="panel" hidden>
-            <h2>Audit log</h2>
-            <p class="panel-hint">Every upload, review, download, request and role change, newest first.</p>
-            <div id="audit-list"></div>
-        </section>
+                <section id="downloads-section" class="panel" hidden>
+                    <h2>My downloads</h2>
+                    <div id="downloads-list"></div>
+                </section>
+
+                <section id="department-section" class="panel" hidden>
+                    <h2>Department datasets</h2>
+                    <div id="department-list"></div>
+                </section>
+
+                <section id="audit-section" class="panel" hidden>
+                    <div class="panel-head">
+                        <h2>Audit log</h2>
+                        <div id="audit-actions"></div>
+                    </div>
+                    <p class="panel-hint">Every upload, review, download, request and role change, newest first.</p>
+                    <div id="audit-list"></div>
+                </section>
+            </div>
+        </div>
     </main>
 
     <script type="module" src="dashboard.js"></script>
