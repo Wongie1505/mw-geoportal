@@ -3,6 +3,7 @@ import { supabase } from '../shared/js/supabase.js';
 import { getCurrentUser } from '../shared/js/auth.js';
 import { createElement, showMessage } from '../shared/js/ui.js';
 import { readGeoData, boundsToWkt, formatSize, FileProblem } from './geodata.js';
+import { readRaster, isRasterFile } from './raster.js';
 import { showMapPreview, showAttributePreview } from './preview.js';
 import { createProgress } from './progress.js';
 
@@ -16,6 +17,7 @@ const fileInput = form.elements.file;
 const fileFeedback = document.getElementById('file-feedback');
 const previewSection = document.getElementById('preview-section');
 const summary = document.getElementById('summary');
+const vectorPreview = document.getElementById('vector-preview');
 const previewMap = document.getElementById('preview-map');
 const previewNote = document.getElementById('preview-note');
 const attributePreview = document.getElementById('attribute-preview');
@@ -106,6 +108,19 @@ async function handleFileChange() {
     fileFeedback.append(createElement('p', 'field-hint', 'Reading and checking the file...'));
 
     try {
+        if (isRasterFile(file)) {
+            const raster = await readRaster(file);
+            if (thisRead !== readCount) return;
+
+            // Uploading rasters is built in the next steps, so for now the file is only checked
+            fileFeedback.replaceChildren(
+                ...raster.warnings.map(text => createMessage(text, 'warning')),
+                createMessage('This raster passed the checks, but uploading rasters is not switched on yet.', 'warning')
+            );
+            showRasterSummary(raster);
+            return;
+        }
+
         const result = await readGeoData(file);
         if (thisRead !== readCount) return;
 
@@ -145,6 +160,7 @@ function showSummary(result) {
     addSummaryRow('Size after processing', formatSize(result.blob.size));
 
     // Show the section first so the map can measure its container
+    vectorPreview.hidden = false;
     previewSection.hidden = false;
 
     const { shown, total } = showMapPreview(previewMap, result.collection);
@@ -153,6 +169,30 @@ function showSummary(result) {
         : '';
 
     showAttributePreview(attributePreview, result.collection, result.attributes);
+}
+
+function describeValues(raster) {
+    if (raster.valueType === 'classes') {
+        const values = raster.classes.map(entry => entry.value).join(', ');
+        return `${raster.classes.length} classes (${values})`;
+    }
+
+    const format = number => number.toLocaleString('en-GB', { maximumFractionDigits: 2 });
+    return `Continuous, from ${format(raster.min)} to ${format(raster.max)}`;
+}
+
+function showRasterSummary(raster) {
+    summary.replaceChildren();
+    addSummaryRow('Size', `${raster.width.toLocaleString('en-GB')} by ${raster.height.toLocaleString('en-GB')} cells`);
+    addSummaryRow('Cell size', `About ${raster.cellMetres.toLocaleString('en-GB')} m`);
+    addSummaryRow('Area covered', describeBounds(raster.bounds));
+    addSummaryRow('Values', describeValues(raster));
+    addSummaryRow('Number type', raster.dataType);
+    addSummaryRow('Empty cells', raster.noData === null ? 'No empty value is set' : `Value ${raster.noData}`);
+
+    // A raster has no attribute table or vector map to show
+    vectorPreview.hidden = true;
+    previewSection.hidden = false;
 }
 
 async function handleSubmit(event) {

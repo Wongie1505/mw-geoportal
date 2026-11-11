@@ -1,7 +1,7 @@
 // Reads an uploaded file, checks it, and describes what it holds.
 // shp is the shapefile reader loaded by a script tag on the page.
 
-const MAX_BYTES = 50 * 1024 * 1024;
+export const MAX_BYTES = 50 * 1024 * 1024;
 const LARGE_LAYER = 50000;
 
 // Rough bounding box of Malawi as [minX, minY, maxX, maxY]
