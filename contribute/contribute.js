@@ -4,6 +4,8 @@ import { getCurrentUser } from '../shared/js/auth.js';
 import { createElement, showMessage } from '../shared/js/ui.js';
 import { readGeoData, boundsToWkt, formatSize, FileProblem } from './geodata.js';
 import { readRaster, isRasterFile } from './raster.js';
+import { buildPreview, previewToBlob } from './raster-preview.js';
+import { createRasterPanel } from './raster-legend.js';
 import { showMapPreview, showAttributePreview } from './preview.js';
 import { createProgress } from './progress.js';
 
@@ -18,6 +20,7 @@ const fileFeedback = document.getElementById('file-feedback');
 const previewSection = document.getElementById('preview-section');
 const summary = document.getElementById('summary');
 const vectorPreview = document.getElementById('vector-preview');
+const rasterPanel = createRasterPanel(document.getElementById('raster-preview'));
 const previewMap = document.getElementById('preview-map');
 const previewNote = document.getElementById('preview-note');
 const attributePreview = document.getElementById('attribute-preview');
@@ -100,6 +103,7 @@ async function handleFileChange() {
     prepared = null;
     submitButton.disabled = true;
     previewSection.hidden = true;
+    rasterPanel.hide();
     fileFeedback.replaceChildren();
 
     const file = fileInput.files[0];
@@ -118,6 +122,13 @@ async function handleFileChange() {
                 createMessage('This raster passed the checks, but uploading rasters is not switched on yet.', 'warning')
             );
             showRasterSummary(raster);
+
+            // The picture takes a second pass over the cells, so it comes after the summary
+            const preview = await buildPreview(raster);
+            const blob = await previewToBlob(preview);
+            if (thisRead !== readCount) return;
+
+            rasterPanel.show(raster, preview, blob);
             return;
         }
 

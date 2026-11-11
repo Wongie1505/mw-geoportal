@@ -64,6 +64,7 @@ export async function readRaster(file) {
     const middleLatitude = (bounds[1] + bounds[3]) / 2;
 
     const raster = {
+        image,
         width,
         height,
         bounds,
@@ -132,13 +133,24 @@ function readDataType(image) {
     return `${format === 2 ? 'Int' : 'UInt'}${bits}`;
 }
 
-// Goes through every cell once, in blocks so that the browser does not have
-// to hold the whole raster. Finds the lowest and highest value, whether the
+// Hands the raster over in blocks of rows, so that the browser never has to
+// hold all of it at once. handle gets the cell values of the block, the row
+// the block starts at, and how many rows it has.
+export async function readBlocks(image, width, height, handle) {
+    const blockHeight = image.getTileHeight();
+    const rows = Math.min(height, Math.max(blockHeight, Math.floor(READ_CELLS / width / blockHeight) * blockHeight));
+
+    for (let top = 0; top < height; top += rows) {
+        const bottom = Math.min(top + rows, height);
+        const [band] = await image.readRasters({ window: [0, top, width, bottom], samples: [0] });
+        handle(band, top, bottom - top);
+    }
+}
+
+// Goes through every cell once. Finds the lowest and highest value, whether the
 // values are a few whole numbers (classes), and the range that holds 96% of
 // the cells, which is what the preview colours are stretched over.
 async function readValues(image, width, height, noData) {
-    const blockHeight = image.getTileHeight();
-    const rows = Math.min(height, Math.max(blockHeight, Math.floor(READ_CELLS / width / blockHeight) * blockHeight));
     const keep = Math.max(1, Math.ceil(width * height / SAMPLE_SIZE));
 
     let min = Infinity;
@@ -158,10 +170,7 @@ async function readValues(image, width, height, noData) {
         run = { value: null, count: 0 };
     }
 
-    for (let top = 0; top < height; top += rows) {
-        const window = [0, top, width, Math.min(top + rows, height)];
-        const [band] = await image.readRasters({ window, samples: [0] });
-
+    await readBlocks(image, width, height, band => {
         for (let i = 0; i < band.length; i++) {
             const value = band[i];
             if (value === noData || !Number.isFinite(value)) continue;
@@ -182,7 +191,7 @@ async function readValues(image, width, height, noData) {
                 }
             }
         }
-    }
+    });
     flushRun();
 
     const result = { valid, min, max };

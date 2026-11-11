@@ -89,3 +89,67 @@
 .progress {
     margin-bottom: 16px;
 }
+
+.raster-preview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+}
+
+.raster-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+
+    background-color: #e9edf1;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    image-rendering: pixelated;
+}
+
+.raster-figure .field-hint {
+    margin-top: 8px;
+}
+
+.legend {
+    margin-bottom: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 0;
+    font-size: 0.9rem;
+}
+
+.swatch {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+}
+
+.legend-bar {
+    height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+}
+
+.legend-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 0.85rem;
+}
+
+.class-names h3 {
+    margin-bottom: 4px;
+}
+
+@media (max-width: 700px) {
+    .raster-preview {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
