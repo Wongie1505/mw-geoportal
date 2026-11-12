@@ -32,6 +32,10 @@
                 <section>
                     <div id="map" class="map"></div>
                     <p id="map-status" class="map-status"></p>
+                    <div id="raster-controls" class="raster-controls" hidden>
+                        <label for="opacity">Opacity</label>
+                        <input type="range" id="opacity" min="10" max="100" value="80">
+                    </div>
                     <div id="access-panel" class="access-panel" hidden></div>
                 </section>
 
@@ -41,7 +45,12 @@
                         <dl id="details" class="details"></dl>
                     </section>
 
-                    <section>
+                    <section id="raster-section" hidden>
+                        <h2>Legend</h2>
+                        <div id="legend" class="legend"></div>
+                    </section>
+
+                    <section id="feature-section">
                         <h2>Feature information</h2>
                         <div id="feature-info" class="feature-info">
                             <p class="hint">Click a feature on the map to see its attributes.</p>

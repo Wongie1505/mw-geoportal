@@ -177,3 +177,44 @@
     padding-left: 20px;
     font-size: 0.9rem;
 }
+
+.raster-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.raster-controls input[type="range"] {
+    flex: 1;
+    max-width: 260px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 0;
+    font-size: 0.9rem;
+}
+
+.swatch {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+}
+
+.legend-bar {
+    height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+}
+
+.legend-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 0.85rem;
+}

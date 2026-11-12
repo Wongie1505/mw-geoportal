@@ -1,9 +1,10 @@
 import { renderNav } from '../shared/js/nav.js';
 import { supabase } from '../shared/js/supabase.js';
 import { getCurrentUser } from '../shared/js/auth.js';
-import { getFileUrl } from '../shared/js/storage.js';
+import { getFileUrl, getSignedUrl } from '../shared/js/storage.js';
 import { showAccessPanel } from './access.js';
 import { createShapefileZip } from './shapefile.js';
+import { describeRaster, previewCellMetres, showLegend, drawRasterMap } from './raster.js';
 import { canDelete, createDeleteButton } from '../shared/js/datasets.js';
 import { accessBadge, createElement, showMessage } from '../shared/js/ui.js';
 
@@ -20,6 +21,11 @@ const downloadButton = document.getElementById('download-button');
 const downloadHint = document.getElementById('download-hint');
 const details = document.getElementById('details');
 const featureInfo = document.getElementById('feature-info');
+const featureSection = document.getElementById('feature-section');
+const rasterSection = document.getElementById('raster-section');
+const rasterControls = document.getElementById('raster-controls');
+const opacityInput = document.getElementById('opacity');
+const legend = document.getElementById('legend');
 
 renderNav();
 loadDataset();
@@ -37,6 +43,7 @@ async function loadDataset() {
         .from('datasets')
         .select(`id, title, abstract, access_level, kind, epsg, license, keywords,
                  file_path, file_format, file_size_bytes, contributor_name,
+                 preview_path, raster_info,
                  status, review_note, published_at, contributed_by, department_id,
                  departments ( name )`)
         .eq('id', id)
@@ -115,6 +122,10 @@ function showDetails(dataset) {
     addDetail('Format', dataset.file_format?.toUpperCase());
     addDetail('Coordinate system', `EPSG:${dataset.epsg}`);
     addDetail('File size', formatSize(dataset.file_size_bytes));
+
+    if (dataset.kind === 'raster' && dataset.raster_info) {
+        describeRaster(dataset.raster_info).forEach(([label, value]) => addDetail(label, value));
+    }
     addDetail('Keywords', dataset.keywords.join(', '));
     addDetail('Published', dataset.published_at
         ? new Date(dataset.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -126,9 +137,8 @@ function showDetails(dataset) {
 }
 
 async function showMap(dataset) {
-    if (dataset.kind !== 'vector') {
-        mapElement.hidden = true;
-        mapStatus.textContent = 'Raster preview is coming in a later update.';
+    if (dataset.kind === 'raster') {
+        await showRasterMap(dataset);
         return;
     }
 
@@ -155,9 +165,75 @@ const FORMAT_HINTS = {
     shapefile: 'Column names are shortened to 10 characters. Points, lines and polygons are saved as separate files in the zip.'
 };
 
+// A raster is shown as a coarse preview picture. The picture of a published
+// public or restricted dataset is open to everyone, which is what lets people
+// decide whether to ask for the real data. For anything else the database has
+// to give this person a ticket first, the same as for a vector file.
+async function showRasterMap(dataset) {
+    const info = dataset.raster_info;
+    featureSection.hidden = true;
+
+    const previewIsOpen = dataset.status === 'published'
+        && ['public', 'restricted'].includes(dataset.access_level);
+
+    let previewUrl = null;
+    let hasAccess;
+
+    if (previewIsOpen) {
+        if (dataset.preview_path) previewUrl = await getSignedUrl(dataset.preview_path, 600);
+        hasAccess = dataset.access_level === 'public' || Boolean(await getFileUrl(dataset, 'view'));
+    } else {
+        hasAccess = Boolean(await getFileUrl(dataset, 'view'));
+        if (hasAccess && dataset.preview_path) previewUrl = await getSignedUrl(dataset.preview_path, 600);
+    }
+
+    if (previewUrl && info?.bounds) {
+        rasterSection.hidden = false;
+        rasterControls.hidden = false;
+        showLegend(legend, info);
+
+        mapStatus.textContent = `A coarse preview, about ${previewCellMetres(info).toLocaleString('en-GB')} m per cell.`
+            + (hasAccess ? ' Download the file for the full resolution.' : '');
+
+        drawRasterMap({ target: mapElement, url: previewUrl, info, opacityInput, status: mapStatus });
+    } else {
+        mapElement.hidden = true;
+        mapStatus.textContent = 'No preview is available for this raster.';
+    }
+
+    if (hasAccess) {
+        showDownloadControls(dataset);
+    } else {
+        await showRasterAccess(dataset);
+    }
+}
+
+// Someone who may see the preview but not the data can ask for access
+async function showRasterAccess(dataset) {
+    if (dataset.access_level !== 'restricted') return;
+
+    const user = await getCurrentUser();
+
+    if (user) {
+        await showAccessPanel(accessPanel, dataset, user);
+    } else {
+        mapStatus.textContent += ' Log in to request the full data.';
+    }
+}
+
 // Shows the format picker and Download button once the file is known to be open to this person
 function showDownloadControls(dataset) {
     downloadBox.hidden = false;
+
+    // A raster is only offered as the file that was uploaded
+    if (dataset.kind === 'raster') {
+        const option = createElement('option', '', 'GeoTIFF');
+        option.value = 'tif';
+
+        downloadFormat.replaceChildren(option);
+        downloadFormat.disabled = true;
+        downloadHint.textContent = 'The original file, at full resolution and exactly as it was uploaded.';
+    }
 
     downloadFormat.addEventListener('change', () => {
         downloadHint.textContent = FORMAT_HINTS[downloadFormat.value];
@@ -169,7 +245,9 @@ function showDownloadControls(dataset) {
         downloadButton.textContent = 'Preparing...';
 
         try {
-            if (downloadFormat.value === 'shapefile') {
+            if (dataset.kind === 'raster') {
+                await downloadGeoTiff(dataset);
+            } else if (downloadFormat.value === 'shapefile') {
                 await downloadShapefile(dataset);
             } else {
                 await downloadGeoJson(dataset);
@@ -182,6 +260,13 @@ function showDownloadControls(dataset) {
         downloadButton.disabled = false;
         downloadButton.textContent = 'Download';
     });
+}
+
+async function downloadGeoTiff(dataset) {
+    const url = await getFileUrl(dataset, 'download', `${downloadBase(dataset)}.tif`);
+    if (!url) throw new Error('The file could not be prepared for download. Please try again.');
+
+    location.assign(url);
 }
 
 async function downloadGeoJson(dataset) {

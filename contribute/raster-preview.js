@@ -182,6 +182,7 @@ export function buildRasterInfo(raster, preview, labels) {
         cell_metres: raster.cellMetres,
         data_type: raster.dataType,
         nodata: Number.isFinite(raster.noData) ? raster.noData : null,
+        bounds: raster.bounds,
         min: raster.min,
         max: raster.max,
         preview: { width: preview.width, height: preview.height }
