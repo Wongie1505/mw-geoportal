@@ -383,10 +383,13 @@ async function uploadFile(path, blob, contentType) {
     if (error) throw error;
 }
 
-// Best effort clean-up after a failed upload
+// Best effort clean-up after a failed upload. Storage only removes files the
+// person may read, which needs a ticket, so one is requested first. Contributors
+// cannot delete datasets, but they can discard their own unsent draft this way.
 async function discard(id, paths) {
+    await supabase.rpc('open_dataset_file', { p_dataset: id, p_purpose: 'view' });
     await supabase.storage.from('datasets').remove(paths);
-    await supabase.from('datasets').delete().eq('id', id);
+    await supabase.rpc('discard_draft', { p_id: id });
 }
 
 function showResult({ id, status, department }) {

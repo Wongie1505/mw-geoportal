@@ -3,22 +3,33 @@ import { createElement } from './ui.js';
 
 // Whether the Delete button should be offered. This only decides what to show.
 // The database makes the real decision when the delete is sent.
+// Only admins, and managers for their own department, delete datasets. The
+// database enforces the same rule, this only decides whether to show the button.
 export function canDelete(user, dataset) {
     if (!user) return false;
     if (user.role === 'admin') return true;
-    if (user.role === 'manager' && user.departmentId === dataset.department_id) return true;
-
-    // Contributors can remove their own dataset until it has been submitted
-    return dataset.contributed_by === user.id
-        && ['draft', 'changes_requested'].includes(dataset.status);
+    return user.role === 'manager' && user.departmentId === dataset.department_id;
 }
 
-// Deletes the file, then the dataset row. The file goes first because the
-// storage rules look the row up to decide who may delete. If the file is
+// Deletes the files, then the dataset row. The files go first because the
+// storage rules look the row up to decide who may delete. A raster has a
+// preview picture beside its data file, and both are removed. If a file is
 // already gone, removing it simply does nothing and the row is still cleared.
+// Whatever page calls this has to load preview_path along with file_path.
 export async function deleteDataset(dataset) {
-    if (dataset.file_path) {
-        const { error } = await supabase.storage.from('datasets').remove([dataset.file_path]);
+    const paths = [dataset.file_path, dataset.preview_path].filter(Boolean);
+
+    if (paths.length) {
+        // Storage only removes files that this person is allowed to read, and
+        // files that are not open data need a ticket from the database for that.
+        // Without one the removal does nothing, without any error.
+        const { error: ticketError } = await supabase.rpc('open_dataset_file', {
+            p_dataset: dataset.id,
+            p_purpose: 'view'
+        });
+        if (ticketError) console.error(ticketError);
+
+        const { error } = await supabase.storage.from('datasets').remove(paths);
         if (error) console.error(error);
     }
 

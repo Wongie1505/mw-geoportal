@@ -42,7 +42,7 @@ export async function loadDepartmentDatasets(user, container, actions) {
     let query = supabase
         .from('datasets')
         .select(`id, title, status, access_level, contributor_name, contributed_by,
-                 department_id, file_path, published_at, created_at`)
+                 department_id, file_path, preview_path, published_at, created_at`)
         .eq('department_id', user.departmentId)
         .order('title');
 

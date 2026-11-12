@@ -9,7 +9,7 @@ export async function loadUploads(user, container, actions) {
     const { data, error } = await supabase
         .from('datasets')
         .select(`id, title, status, access_level, review_note, created_at, file_path,
-                 department_id, contributed_by, departments ( name )`)
+                 preview_path, department_id, contributed_by, departments ( name )`)
         .eq('contributed_by', user.id)
         .order('created_at', { ascending: false });
 
