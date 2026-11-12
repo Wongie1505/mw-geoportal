@@ -3,8 +3,8 @@ import { supabase } from '../shared/js/supabase.js';
 import { getCurrentUser } from '../shared/js/auth.js';
 import { createElement, showMessage } from '../shared/js/ui.js';
 import { readGeoData, boundsToWkt, formatSize, FileProblem } from './geodata.js';
-import { readRaster, isRasterFile } from './raster.js';
-import { buildPreview, previewToBlob } from './raster-preview.js';
+import { readRaster } from './raster.js';
+import { buildPreview, previewToBlob, buildRasterInfo } from './raster-preview.js';
 import { createRasterPanel } from './raster-legend.js';
 import { showMapPreview, showAttributePreview } from './preview.js';
 import { createProgress } from './progress.js';
@@ -15,12 +15,14 @@ const resultActions = document.getElementById('result-actions');
 const loginNotice = document.getElementById('login-notice');
 const departmentSelect = form.elements.department;
 const departmentHint = document.getElementById('department-hint');
+const dataTypeSelect = form.elements.dataType;
 const fileInput = form.elements.file;
+const fileHint = document.getElementById('file-hint');
 const fileFeedback = document.getElementById('file-feedback');
 const previewSection = document.getElementById('preview-section');
 const summary = document.getElementById('summary');
 const vectorPreview = document.getElementById('vector-preview');
-const rasterPanel = createRasterPanel(document.getElementById('raster-preview'));
+const rasterPanel = createRasterPanel(document.getElementById('raster-preview'), updateSubmitState);
 const previewMap = document.getElementById('preview-map');
 const previewNote = document.getElementById('preview-note');
 const attributePreview = document.getElementById('attribute-preview');
@@ -29,7 +31,30 @@ const progress = createProgress(document.getElementById('progress'));
 
 let user = null;
 
+// What each choice of data type accepts
+const DATA_TYPES = {
+    geojson: {
+        label: 'GeoJSON',
+        accept: '.geojson,.json',
+        pattern: /\.(geo)?json$/i,
+        hint: 'GeoJSON in WGS 84 (EPSG:4326). Up to 50 MB.'
+    },
+    shapefile: {
+        label: 'zipped Shapefile',
+        accept: '.zip',
+        pattern: /\.zip$/i,
+        hint: 'A zip holding the shapefile with its .shp, .dbf and .prj files. Up to 50 MB.'
+    },
+    raster: {
+        label: 'GeoTIFF',
+        accept: '.tif,.tiff',
+        pattern: /\.tiff?$/i,
+        hint: 'A single band GeoTIFF in WGS 84 (EPSG:4326). Up to 50 MB.'
+    }
+};
+
 // The checked file, ready to upload. Empty until a file passes the checks.
+// It holds the kind of data, the file to send, and for a raster its preview.
 let prepared = null;
 
 // Lets a slow check for an old file be ignored once another file is chosen
@@ -39,6 +64,7 @@ renderNav();
 start();
 
 departmentSelect.addEventListener('change', updateDepartmentHint);
+dataTypeSelect.addEventListener('change', handleDataTypeChange);
 fileInput.addEventListener('change', handleFileChange);
 form.addEventListener('submit', handleSubmit);
 
@@ -97,11 +123,29 @@ function createMessage(text, type) {
 }
 
 // Checks the chosen file as soon as it is picked and shows what it holds
+function handleDataTypeChange() {
+    const type = DATA_TYPES[dataTypeSelect.value];
+
+    fileInput.accept = type.accept;
+    fileInput.disabled = false;
+    fileHint.textContent = type.hint;
+
+    // A file picked for another data type no longer counts
+    fileInput.value = '';
+    handleFileChange();
+}
+
+// The submit button waits for a checked file and, for a class raster, a name for every class
+function updateSubmitState() {
+    const waitingForNames = prepared?.kind === 'raster' && !rasterPanel.isComplete();
+    submitButton.disabled = !prepared || waitingForNames;
+}
+
 async function handleFileChange() {
     const thisRead = ++readCount;
 
     prepared = null;
-    submitButton.disabled = true;
+    updateSubmitState();
     previewSection.hidden = true;
     rasterPanel.hide();
     fileFeedback.replaceChildren();
@@ -109,36 +153,20 @@ async function handleFileChange() {
     const file = fileInput.files[0];
     if (!file) return;
 
+    const type = DATA_TYPES[dataTypeSelect.value];
+    if (!type.pattern.test(file.name)) {
+        fileFeedback.replaceChildren(createMessage(`You chose ${type.label} as the data type, but this file does not look like one. Pick a ${type.accept.replace(/,/g, ' or ')} file, or change the data type.`, 'error'));
+        return;
+    }
+
     fileFeedback.append(createElement('p', 'field-hint', 'Reading and checking the file...'));
 
     try {
-        if (isRasterFile(file)) {
-            const raster = await readRaster(file);
-            if (thisRead !== readCount) return;
-
-            // Uploading rasters is built in the next steps, so for now the file is only checked
-            fileFeedback.replaceChildren(
-                ...raster.warnings.map(text => createMessage(text, 'warning')),
-                createMessage('This raster passed the checks, but uploading rasters is not switched on yet.', 'warning')
-            );
-            showRasterSummary(raster);
-
-            // The picture takes a second pass over the cells, so it comes after the summary
-            const preview = await buildPreview(raster);
-            const blob = await previewToBlob(preview);
-            if (thisRead !== readCount) return;
-
-            rasterPanel.show(raster, preview, blob);
-            return;
+        if (dataTypeSelect.value === 'raster') {
+            await prepareRaster(file, thisRead);
+        } else {
+            await prepareVector(file, thisRead);
         }
-
-        const result = await readGeoData(file);
-        if (thisRead !== readCount) return;
-
-        prepared = result;
-        fileFeedback.replaceChildren(...result.warnings.map(text => createMessage(text, 'warning')));
-        showSummary(result);
-        submitButton.disabled = false;
     } catch (error) {
         if (thisRead !== readCount) return;
 
@@ -146,6 +174,52 @@ async function handleFileChange() {
         const text = error instanceof FileProblem ? error.message : 'That file could not be read.';
         fileFeedback.replaceChildren(createMessage(text, 'error'));
     }
+}
+
+async function prepareVector(file, thisRead) {
+    const result = await readGeoData(file);
+    if (thisRead !== readCount) return;
+
+    // Both GeoJSON and shapefiles are saved as GeoJSON
+    prepared = {
+        kind: 'vector',
+        fileFormat: 'geojson',
+        fileName: 'data.geojson',
+        contentType: 'application/geo+json',
+        blob: result.blob,
+        bounds: result.bounds
+    };
+    fileFeedback.replaceChildren(...result.warnings.map(text => createMessage(text, 'warning')));
+    showSummary(result);
+    updateSubmitState();
+}
+
+async function prepareRaster(file, thisRead) {
+    const raster = await readRaster(file);
+    if (thisRead !== readCount) return;
+
+    fileFeedback.replaceChildren(...raster.warnings.map(text => createMessage(text, 'warning')));
+    showRasterSummary(raster);
+
+    // The picture takes a second pass over the cells, so it comes after the summary
+    const preview = await buildPreview(raster);
+    const previewBlob = await previewToBlob(preview);
+    if (thisRead !== readCount) return;
+
+    // The original file is uploaded as it is, next to the small preview picture
+    prepared = {
+        kind: 'raster',
+        fileFormat: 'tif',
+        fileName: 'data.tif',
+        contentType: 'image/tiff',
+        blob: file,
+        bounds: raster.bounds,
+        raster,
+        preview,
+        previewBlob
+    };
+    rasterPanel.show(raster, preview, previewBlob);
+    updateSubmitState();
 }
 
 function addSummaryRow(label, value) {
@@ -210,6 +284,11 @@ async function handleSubmit(event) {
     event.preventDefault();
     if (!prepared) return;
 
+    if (prepared.kind === 'raster' && !rasterPanel.isComplete()) {
+        showMessage(message, 'Name every class before uploading.');
+        return;
+    }
+
     showMessage(message, '');
     submitButton.disabled = true;
     progress.set(0, 'Starting.');
@@ -231,44 +310,53 @@ async function handleSubmit(event) {
 // the draft fails, the draft and any uploaded file are removed again.
 // The bar moves in steps. The file transfer is one request, so the bar waits
 // at its step, with a moving stripe, until the transfer finishes.
-async function uploadDataset(geo) {
+async function uploadDataset(upload) {
     const fields = form.elements;
+    const isRaster = upload.kind === 'raster';
+
+    const row = {
+        title: fields.title.value.trim(),
+        abstract: fields.abstract.value.trim(),
+        department_id: fields.department.value,
+        license: fields.license.value.trim(),
+        access_level: fields.access.value,
+        keywords: fields.keywords.value.split(',').map(word => word.trim()).filter(Boolean),
+        kind: upload.kind,
+        epsg: 4326,
+        file_format: upload.fileFormat,
+        extent: boundsToWkt(upload.bounds)
+    };
+    if (isRaster) row.raster_info = buildRasterInfo(upload.raster, upload.preview, rasterPanel.labels());
 
     progress.set(10, 'Saving details.');
     const { data: dataset, error: insertError } = await supabase
         .from('datasets')
-        .insert({
-            title: fields.title.value.trim(),
-            abstract: fields.abstract.value.trim(),
-            department_id: fields.department.value,
-            license: fields.license.value.trim(),
-            access_level: fields.access.value,
-            keywords: fields.keywords.value.split(',').map(word => word.trim()).filter(Boolean),
-            kind: 'vector',
-            epsg: 4326,
-            file_format: 'geojson',
-            extent: boundsToWkt(geo.bounds)
-        })
+        .insert(row)
         .select('id')
         .single();
 
     if (insertError) throw new Error(`Could not save the dataset: ${insertError.message}`);
 
-    const path = `${dataset.id}/data.geojson`;
+    const paths = [`${dataset.id}/${upload.fileName}`];
 
     try {
-        progress.set(30, `Uploading file (${formatSize(geo.blob.size)}). This can take a while on a slow connection.`);
-        progress.working(true);
-        const { error: uploadError } = await supabase.storage
-            .from('datasets')
-            .upload(path, geo.blob, { contentType: 'application/geo+json' });
-        progress.working(false);
-        if (uploadError) throw uploadError;
+        progress.set(30, `Uploading file (${formatSize(upload.blob.size)}). This can take a while on a slow connection.`);
+        await uploadFile(paths[0], upload.blob, upload.contentType);
+
+        // The row needs the paths of the files that are now in storage
+        const changes = { file_path: paths[0], file_size_bytes: upload.blob.size };
+
+        if (isRaster) {
+            progress.set(80, 'Uploading the preview picture.');
+            paths.push(`${dataset.id}/preview.png`);
+            await uploadFile(paths[1], upload.previewBlob, 'image/png');
+            changes.preview_path = paths[1];
+        }
 
         progress.set(90, 'Saving file details.');
         const { error: updateError } = await supabase
             .from('datasets')
-            .update({ file_path: path, file_size_bytes: geo.blob.size })
+            .update(changes)
             .eq('id', dataset.id);
         if (updateError) throw updateError;
 
@@ -281,14 +369,23 @@ async function uploadDataset(geo) {
         return { id: dataset.id, status, department: selectedDepartmentName() };
     } catch (error) {
         progress.working(false);
-        await discard(dataset.id, path);
+        await discard(dataset.id, paths);
         throw new Error(`Could not upload the dataset: ${error.message}`);
     }
 }
 
+// One file transfer is a single request, so the bar waits with a moving stripe
+async function uploadFile(path, blob, contentType) {
+    progress.working(true);
+    const { error } = await supabase.storage.from('datasets').upload(path, blob, { contentType });
+    progress.working(false);
+
+    if (error) throw error;
+}
+
 // Best effort clean-up after a failed upload
-async function discard(id, path) {
-    await supabase.storage.from('datasets').remove([path]);
+async function discard(id, paths) {
+    await supabase.storage.from('datasets').remove(paths);
     await supabase.from('datasets').delete().eq('id', id);
 }
 
