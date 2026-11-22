@@ -64,6 +64,21 @@ export async function renderNav() {
         .filter(item => !item.roles || (user && item.roles.includes(user.role)))
         .forEach(item => links.append(createLink(item.label, item.href)));
 
-    inner.append(brand, links, buildAccountArea(user));
+    // Links and account area sit in one box, so the phone menu can show or hide them together
+    const menu = createElement('div', 'nav-menu');
+    menu.id = 'nav-menu';
+    menu.append(links, buildAccountArea(user));
+
+    // Opens and closes the menu on small screens. Hidden on desktop by the CSS.
+    const toggle = createElement('button', 'nav-toggle', 'Menu');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-controls', 'nav-menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.addEventListener('click', () => {
+        const open = inner.classList.toggle('nav-open');
+        toggle.setAttribute('aria-expanded', String(open));
+    });
+
+    inner.append(brand, toggle, menu);
     header.replaceChildren(inner);
 }

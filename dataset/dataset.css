@@ -218,3 +218,19 @@
     margin-top: 4px;
     font-size: 0.85rem;
 }
+
+/* Small phones: shorter map, footer actions stacked, select uses the full width */
+@media (max-width: 600px) {
+    .map {
+        height: 300px;
+    }
+
+    .dataset-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .download-controls select {
+        width: 100%;
+    }
+}

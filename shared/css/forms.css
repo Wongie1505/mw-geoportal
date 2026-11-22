@@ -168,3 +168,11 @@
 .auth-card .switch a {
     color: var(--brand);
 }
+
+/* Small phones: less margin and padding so the form has room */
+@media (max-width: 480px) {
+    .auth-card {
+        margin: 24px 12px;
+        padding: 24px;
+    }
+}

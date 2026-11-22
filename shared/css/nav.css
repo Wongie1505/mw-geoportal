@@ -83,3 +83,45 @@ a:visited{
 a:visited{
     color: var(--brand);
 }
+
+/* The menu box and its button are only used on small screens */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.nav-toggle {
+    display: none;
+}
+
+@media (max-width: 720px) {
+    .nav-toggle {
+        display: block;
+        padding: 6px 14px;
+        border: 1px solid #ffffff;
+        border-radius: var(--radius);
+        background: transparent;
+        color: #ffffff;
+        font: inherit;
+        cursor: pointer;
+    }
+
+    /* Links and account area are hidden until the button opens them */
+    .nav-menu {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding-top: 8px;
+    }
+
+    .nav-inner.nav-open .nav-menu {
+        display: flex;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+    }
+}
