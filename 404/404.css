@@ -1,0 +1,38 @@
+.not-found {
+    max-width: 640px;
+    margin: 64px auto;
+    padding: 0 24px;
+    text-align: center;
+}
+
+.error-code {
+    margin-bottom: 12px;
+    color: var(--accent);
+    font-size: 4rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.not-found h1 {
+    margin-bottom: 12px;
+    color: var(--brand);
+    font-size: 1.8rem;
+}
+
+.not-found p {
+    margin-bottom: 24px;
+    color: var(--muted);
+}
+
+.not-found .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+@media (max-width: 480px) {
+    .error-code {
+        font-size: 3rem;
+    }
+}

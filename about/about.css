@@ -1,0 +1,72 @@
+.about {
+    max-width: 960px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.about h1 {
+    margin-bottom: 12px;
+    color: var(--brand);
+    font-size: 2rem;
+}
+
+.about .intro {
+    margin-bottom: 32px;
+    font-size: 1.05rem;
+}
+
+/* The photo fills the page width. The whole image is a link to the full-size file. */
+.class-photo {
+    margin-bottom: 32px;
+}
+
+.class-photo a {
+    display: block;
+}
+
+.class-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.class-photo figcaption {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.about section {
+    margin-bottom: 24px;
+    padding: 20px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.about h2 {
+    margin-bottom: 12px;
+    color: var(--brand);
+    font-size: 1.1rem;
+}
+
+.about p {
+    font-size: 1rem;
+}
+
+/* Names in a grid with no bullets, so long lists stay easy to scan on any screen */
+.names {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    gap: 8px 16px;
+    list-style: none;
+    padding: 0;
+}
+
+.names li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+}

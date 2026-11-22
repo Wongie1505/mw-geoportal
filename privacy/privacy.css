@@ -1,0 +1,36 @@
+.policy {
+    max-width: 760px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.policy h1 {
+    margin-bottom: 6px;
+    color: var(--brand);
+    font-size: 2rem;
+}
+
+.policy .updated {
+    margin-bottom: 32px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.policy section {
+    margin-bottom: 24px;
+    padding: 20px;
+
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.policy h2 {
+    margin-bottom: 8px;
+    color: var(--brand);
+    font-size: 1.1rem;
+}
+
+.policy p {
+    font-size: 1rem;
+}
