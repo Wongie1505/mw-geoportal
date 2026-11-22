@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /dashboard/
+Disallow: /contribute/
+Disallow: /login/
+Disallow: /register/
+
+Sitemap: https://mw-geoportal.vercel.app/sitemap.xml

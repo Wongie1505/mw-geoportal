@@ -7,7 +7,7 @@ const ROOT = '../';
 // Add a line here whenever a new page is built.
 // roles limits who sees the link. Leave it out to show it to everyone.
 const LINKS = [
-    { label: 'Home', href: 'home/home.html' },
+    { label: 'Home', href: 'index.html' },
     { label: 'Datasets', href: 'catalog/catalog.html' },
     { label: 'Dashboard', href: 'dashboard/dashboard.html', roles: ['user', 'member', 'manager', 'admin'] },
     { label: 'Contribute', href: 'contribute/contribute.html', roles: ['user', 'member', 'manager', 'admin'] }
@@ -18,7 +18,10 @@ function createLink(label, href, className) {
     link.href = ROOT + href;
 
     // Mark the link for the page we are on
-    if (location.pathname.includes('/' + href)) {
+       const onThisPage = href === 'index.html'
+        ? location.pathname === '/' || location.pathname.endsWith('/index.html')
+        : location.pathname.includes('/' + href);
+    if (onThisPage) {
         link.setAttribute('aria-current', 'page');
     }
     return link;
@@ -39,7 +42,7 @@ function buildAccountArea(user) {
     logout.type = 'button';
     logout.addEventListener('click', async () => {
         await signOut();
-        location.href = ROOT + 'home/home.html';
+        location.href = ROOT + 'index.html';
     });
 
     account.append(
@@ -56,7 +59,7 @@ export async function renderNav() {
     const user = await getCurrentUser();
 
     const inner = createElement('div', 'nav-inner');
-    const brand = createLink('Malawi Geoportal', 'home/home.html', 'nav-brand');
+    const brand = createLink('Malawi Geoportal', 'index.html', 'nav-brand');
     brand.removeAttribute('aria-current');
 
     const links = createElement('nav', 'nav-links');
