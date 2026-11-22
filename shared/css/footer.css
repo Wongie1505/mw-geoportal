@@ -1,0 +1,52 @@
+/* Site footer, used by every public page */
+.site-footer {
+    background-color: var(--brand-dark);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 28px;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.footer-brand strong {
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+.footer-brand p {
+    margin-top: 4px;
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.site-footer a,
+.site-footer a:visited {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer-copy {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 24px 24px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.85rem;
+}

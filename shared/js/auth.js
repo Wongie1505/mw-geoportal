@@ -25,13 +25,19 @@ function fail(error) {
     throw new Error(friendlyError(error));
 }
 
-// Creates the account. The profile row is made by a database trigger,
-// using the name passed in as metadata.
-export async function signUp({ fullName, email, password }) {
+// Creates the account. The profile row and the terms acceptance row are made
+// by database triggers, using the details passed in as metadata.
+export async function signUp({ fullName, email, password, termsVersion, privacyVersion }) {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullName } }
+        options: {
+            data: {
+                full_name: fullName,
+                terms_version: termsVersion,
+                privacy_version: privacyVersion
+            }
+        }
     });
 
     if (error) fail(error);

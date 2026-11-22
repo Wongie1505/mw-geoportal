@@ -1,0 +1,25 @@
+/* Consent checkboxes above the register button */
+.consent {
+    margin-bottom: 20px;
+}
+
+.consent .checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.consent input[type="checkbox"] {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 4px;
+    accent-color: var(--brand);
+}
+
+.consent a {
+    color: var(--brand);
+}

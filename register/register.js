@@ -1,10 +1,13 @@
 import { renderNav } from '../shared/js/nav.js';
 import { signUp, getCurrentUser } from '../shared/js/auth.js';
 import { showMessage } from '../shared/js/ui.js';
+import { TERMS_VERSION, PRIVACY_VERSION } from '../shared/js/site.js';
 
 const form = document.getElementById('register-form');
 const message = document.getElementById('message');
 const submitButton = form.querySelector('button[type="submit"]');
+const termsBox = document.getElementById('accept-terms');
+const privacyBox = document.getElementById('accept-privacy');
 
 renderNav();
 
@@ -13,6 +16,15 @@ getCurrentUser().then(user => {
     if (user) location.replace('../catalog/catalog.html');
 });
 
+// The register button only works once both boxes are ticked
+function updateSubmitState() {
+    submitButton.disabled = !(termsBox.checked && privacyBox.checked);
+}
+
+termsBox.addEventListener('change', updateSubmitState);
+privacyBox.addEventListener('change', updateSubmitState);
+updateSubmitState();
+
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     showMessage(message, '');
@@ -20,6 +32,12 @@ form.addEventListener('submit', async (event) => {
     const fullName = form.elements.fullName.value.trim();
     const email = form.elements.email.value.trim();
     const password = form.elements.password.value;
+
+    // Checked again here in case the button was enabled some other way
+    if (!termsBox.checked || !privacyBox.checked) {
+        showMessage(message, 'Tick both boxes to agree to the Terms of Use and the Privacy Notice.');
+        return;
+    }
 
     // Checked here for a quick answer. Supabase enforces its own rules too.
     if (!fullName) {
@@ -38,7 +56,14 @@ form.addEventListener('submit', async (event) => {
     submitButton.disabled = true;
 
     try {
-        const { needsConfirmation } = await signUp({ fullName, email, password });
+        // The versions are saved with the account, so each acceptance points to the exact text agreed to
+        const { needsConfirmation } = await signUp({
+            fullName,
+            email,
+            password,
+            termsVersion: TERMS_VERSION,
+            privacyVersion: PRIVACY_VERSION
+        });
 
         if (needsConfirmation) {
             form.hidden = true;
@@ -48,6 +73,6 @@ form.addEventListener('submit', async (event) => {
         }
     } catch (error) {
         showMessage(message, error.message);
-        submitButton.disabled = false;
+        updateSubmitState();
     }
 });

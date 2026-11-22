@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Malawi Geoportal</title>
+    <title>Create an account | Malawi Geoportal</title>
+    <meta name="description" content="Create a Malawi Geoportal account to request access to restricted spatial datasets, join a government department and contribute GIS data. Accept the Terms of Use to register.">
+    <meta name="keywords" content="register Malawi geoportal, create account GIS Malawi, request spatial data access, join department GIS Malawi, contribute geospatial data, Malawi GIS account sign up">
 
     <link rel="stylesheet" href="../shared/css/base.css">
     <link rel="stylesheet" href="../shared/css/nav.css">
     <link rel="stylesheet" href="../shared/css/forms.css">
+    <link rel="stylesheet" href="../shared/css/footer.css">
+    <link rel="stylesheet" href="register.css">
 </head>
 <body>
     <header id="site-header" class="site-header"></header>
@@ -40,12 +44,40 @@
                     <input type="password" id="confirm-password" name="confirmPassword" autocomplete="new-password" required>
                 </div>
 
-                <button type="submit" class="button">Register</button>
+                <div class="consent">
+                    <label class="checkbox">
+                        <input type="checkbox" id="accept-terms" name="acceptTerms">
+                        <span>I have read and agree to the <a href="/terms/terms.html" target="_blank" rel="noopener">Terms of Use</a>.</span>
+                    </label>
+
+                    <label class="checkbox">
+                        <input type="checkbox" id="accept-privacy" name="acceptPrivacy">
+                        <span>I have read the <a href="/privacy/privacy.html" target="_blank" rel="noopener">Privacy Notice</a> and understand how my personal information will be processed.</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="button" disabled>Register</button>
             </form>
 
             <p class="switch">Already registered? <a href="../login/login.html">Log in</a></p>
         </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <strong>Malawi Geoportal</strong>
+                <p>Spatial data from Malawian departments.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer">
+                <a href="/catalog/catalog.html">Datasets</a>
+                <a href="/about/about.html">About</a>
+                <a href="/terms/terms.html">Terms of Use</a>
+                <a href="/privacy/privacy.html">Privacy</a>
+            </nav>
+        </div>
+        <p class="footer-copy">&copy; 2026 Malawi Geoportal</p>
+    </footer>
 
     <script type="module" src="register.js"></script>
 </body>
